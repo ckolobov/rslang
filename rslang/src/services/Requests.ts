@@ -21,7 +21,6 @@ export class Request {
       }
     });
     const content = await rawResponse.json();
-    console.log(content);
     return content;
   }
 
