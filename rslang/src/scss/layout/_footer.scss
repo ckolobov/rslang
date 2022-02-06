@@ -1,0 +1,33 @@
+@import '../abstract/constants';
+.footer {
+  width: 100%;
+  font-size: 1.7rem;
+}
+
+.footer__wrapper {
+  color: $color-light;
+  @include horizontal-flex();
+  height: 150px;
+  padding: 0 $padding;
+}
+
+.footer__content {
+  column-gap: 40px;
+  @include horizontal-flex();
+}
+
+.contacts {
+  column-gap: 15px;
+  @include horizontal-flex();
+}
+
+.rs-logo__img {
+  width: 166px;
+  height: 62px;
+  background-image: url('../../assets/svg/rs_school_logo.svg');
+  @include bg-size();
+}
+
+.rs-logo:hover {
+  filter: invert(15%);
+}

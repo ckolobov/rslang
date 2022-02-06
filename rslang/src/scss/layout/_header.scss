@@ -1,0 +1,44 @@
+@import '../abstract/constants';
+.header {
+  width: 100%;
+  background-color: $color-dark;
+}
+
+.header__wrapper {
+  margin: auto;
+  padding: $padding;
+  @include horizontal-flex();
+}
+
+.navigation {
+  @include horizontal-flex();
+}
+
+.header__navigation {
+  width: 560px;
+}
+
+.logo {
+  @include horizontal-flex();
+  &:hover {
+    filter: invert(15%);
+  }
+}
+
+.logo__title {
+  padding-left: 10px;
+  span {
+    @include styled-text();
+  }
+}
+
+.logo__img {
+  width: 100px;
+  height: 50px;
+  background-image: url('../../assets/svg/UK-flag.svg');
+  @include bg-size();
+}
+
+.navigation__link.active {
+  color: $color-primary;
+}

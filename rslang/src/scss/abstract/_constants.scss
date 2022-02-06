@@ -1,0 +1,34 @@
+$color-light: #fff;
+$color-dark: #000000;
+$color-background: #f4f4f4;
+$color-additional: hsl(172, 100%, 47%);
+$color-primary: #00acea;
+$color-charcoal: #384047;
+$color-gray: #e8eeef;
+$color-wrong: red;
+$border-rounded: 6px;
+$font-primary: 'Montserrat', sans-serif;
+$padding: 3rem;
+
+@mixin horizontal-flex() {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+@mixin vertical-flex {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin styled-text() {
+  -webkit-text-stroke: 1px $color-light;
+  -webkit-text-fill-color: $color-dark;
+}
+
+@mixin bg-size() {
+  background-size: contain;
+  background-repeat: no-repeat;
+}
