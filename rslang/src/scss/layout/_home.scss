@@ -1,0 +1,83 @@
+@import "../abstract/constants";
+.promo {
+  height: calc(100vh - 162px);
+  width: calc(100vw + 20px);
+  overflow: hidden;
+  padding: 0;
+  box-shadow: 0 0 8px 8px $color-dark inset;
+  background-image: url("../../assets/img/london.jpg");
+  background-size: cover;
+}
+.promo__title {
+  width: 200px;
+  font-size: 42px;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: $color-light;
+  color: $color-light;
+  span {
+    @include styled-text();
+  }
+}
+
+.promo__wrapper {
+  margin: auto;
+  height: 100%;
+  width: 300px;
+  background-color: $color-dark;
+  @include vertical-flex();
+}
+
+.team {
+  padding: 100px $padding;
+}
+
+.team__title {
+  font-size: 3rem;
+  text-transform: uppercase;
+  font-weight: 500;
+  text-align: center;
+}
+
+.team-member__name {
+  font-size: 2.5rem;
+  font-weight: 500;
+  text-align: center;
+  font-family: Helvetica, sans-serif;
+}
+
+.team-member__img {
+  margin-bottom: 15px;
+  width: 300px;
+  height: 300px;
+  border: double 2px transparent;
+  border-radius: 50%;
+  background-image: linear-gradient(white, white),
+    linear-gradient($color-additional, $color-primary);
+  background-origin: border-box;
+  background-clip: content-box, border-box;
+  transition: 0.5s;
+}
+
+.member__link {
+  width: 100%;
+  @include vertical-flex();
+}
+
+.member__link:hover > .team-member__img {
+  background-image: linear-gradient(white, white),
+    linear-gradient($color-primary, $color-additional);
+}
+
+.member__link:hover > .team-member__name {
+  filter: invert(25%);
+}
+
+.team-member__card {
+  width: 360px;
+}
+
+.team-members {
+  @include horizontal-flex();
+  justify-content: space-around;
+}
