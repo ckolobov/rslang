@@ -1,4 +1,5 @@
 const url = 'http://localhost:3001'; //change for your db port
+export enum Difficulty {CASUAL, NORMAL1, NORMAL2, HARD};
 export class Request {
     // 1. Получить слова определенной группы, определенной страницы
   static async getWordsList (options:{group?: number, page?: number}) {
@@ -110,8 +111,7 @@ export class Request {
   };
 
   //9. Добавить слово в словарь сложных слов конкретного пользователя.
-  // Предлагаю градацию hard - normal3 - normal2 - normal1 - casual.
-  static async SetWordInUsersList (id: string, token: string, wordid: string, difficulty: string) {
+  static async SetWordInUsersList (id: string, token: string, wordid: string, difficulty: Difficulty) {
     const rawResponse = await fetch(`${url}/users/${id}/words/${wordid}`, {
       method: 'POST',
         headers: {
@@ -141,7 +141,7 @@ export class Request {
   };
 
   //11. Отредактировать слово в списке сложных слов
-  static async editWordInUserWordsList (id: string, token: string, wordid: string, difficulty: string) {
+  static async editWordInUserWordsList (id: string, token: string, wordid: string, difficulty: Difficulty) {
     const rawResponse = await fetch(`${url}/users/${id}/words/${wordid}`, {
       method: 'PUT',
       headers: {
@@ -247,6 +247,7 @@ export class Request {
       body: JSON.stringify(user)
     });
     const content = await rawResponse.json();
+    console.log(content);
     return content;
   };
 }
