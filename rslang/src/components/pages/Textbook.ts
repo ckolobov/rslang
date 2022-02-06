@@ -1,4 +1,4 @@
-import Page from "./Page";
+import Page from './Page';
 
 class Textbook implements Page {
   public async render(): Promise<string> {

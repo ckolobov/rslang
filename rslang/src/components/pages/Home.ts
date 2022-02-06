@@ -1,10 +1,10 @@
-import Page from "./Page";
+import Page from './Page';
 import '../../scss/layout/_home.scss';
 
 class Home implements Page {
   public async render(): Promise<string> {
     const view = `
-    <section class="promo">
+  <section class="promo">
     <div class="wrapper promo__wrapper">
       <h2 class="promo__title">
         Learn 3600 m<span>ost</span> c<span>ommon</span> E<span

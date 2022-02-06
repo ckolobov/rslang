@@ -1,4 +1,4 @@
-import Component from "./common/Component";
+import Component from './common/Component';
 import '../scss/layout/_footer.scss';
 
 class Footer implements Component {

@@ -1,13 +1,14 @@
-@import "../abstract/constants";
+@import '../abstract/constants';
 .promo {
   height: calc(100vh - 162px);
   width: calc(100vw + 20px);
   overflow: hidden;
   padding: 0;
   box-shadow: 0 0 8px 8px $color-dark inset;
-  background-image: url("../../assets/img/london.jpg");
+  background-image: url('../../assets/img/london.jpg');
   background-size: cover;
 }
+
 .promo__title {
   width: 200px;
   font-size: 42px;

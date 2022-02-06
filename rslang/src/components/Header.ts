@@ -1,23 +1,23 @@
-import Component from "./common/Component"
-import Drawer from "./drawer/Drawer"
-import Button from "./common/Button"
-import "../scss/layout/_header.scss"
+import Component from './common/Component';
+import Drawer from './drawer/Drawer';
+import Button from './common/Button';
+import '../scss/layout/_header.scss';
 
 class Header implements Component {
-  private class: string
+  private class: string;
 
   public constructor(options) {
-    this.class = options.class
+    this.class = options.class;
   }
 
   public async render(): Promise<string> {
     const authorizationButton = await Drawer.drawComponent(Button, {
-      id: "authorization-button",
-      class: "header__button",
-      text: "Log in",
-    })
+      id: 'authorization-button',
+      class: 'header__button',
+      text: 'Log in',
+    });
     const view = `
-    <div class="wrapper header__wrapper ${this.class ? this.class : ""}">
+    <div class="wrapper header__wrapper ${this.class ? this.class : ''}">
       <a href="/#" class="logo link">
         <div class="logo__img"></div>
         <h1 class="logo__title">RS <span>Lang</span></h1>
@@ -40,27 +40,26 @@ class Header implements Component {
       </nav>
       ${authorizationButton}
     </div>
-    `
-    return view
+    `;
+    return view;
   }
 
   private showActiveMenuItem(): void {
-    const id = window.location.hash.slice(2).toLowerCase()
-    console.log(id);
+    const id = window.location.hash.slice(2).toLowerCase();
     const menuItems = document.querySelectorAll(
-      ".navigation__link"
-    ) as NodeListOf<HTMLAnchorElement>
-    menuItems.forEach((item) => item.classList.remove("active"))
-    const menuItem = document.getElementById(id) as HTMLElement
+      '.navigation__link'
+    ) as NodeListOf<HTMLAnchorElement>;
+    menuItems.forEach((item) => item.classList.remove('active'));
+    const menuItem = document.getElementById(id) as HTMLElement;
     if (menuItem) {
-      menuItem.classList.add("active")
+      menuItem.classList.add('active');
     }
   }
 
   public async after_render(): Promise<void> {
     this.showActiveMenuItem();
-    window.addEventListener("hashchange", this.showActiveMenuItem);
+    window.addEventListener('hashchange', this.showActiveMenuItem);
   }
 }
 
-export default Header
+export default Header;

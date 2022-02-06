@@ -1,4 +1,4 @@
-import Component from "./Component";
+import Component from './Component';
 import '../../scss/components/_button.scss';
 
 class Button implements Component {
@@ -14,14 +14,15 @@ class Button implements Component {
 
   public async render(): Promise<string> {
     const view = `
-      <button id="${this.id ? this.id : ''}" class="button ${this.class ? this.class : ''}">${this.text}</button>
+      <button id="${this.id ? this.id : ''}" class="button 
+      ${this.class ? this.class : ''}">${this.text}</button>
     `;
     return view;
   }
 
   public async after_render(): Promise<void> {
-    console.log('button after_render');
+    return;
   }
 }
 
-export default Button
+export default Button;

@@ -1,4 +1,4 @@
-import Page from "./Page";
+import Page from './Page';
 
 class Statistics implements Page {
   public async render(): Promise<string> {

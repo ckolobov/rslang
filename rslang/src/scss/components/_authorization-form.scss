@@ -1,5 +1,4 @@
-@import "../abstract/constants";
-
+@import '../abstract/constants';
 .login__form {
   position: relative;
   background-color: $color-light;
@@ -10,9 +9,11 @@
   @include vertical-flex();
   box-shadow: 0 10px 40px -14px rgba(0, 0, 0, 0.25);
 }
+
 .login__content {
   @include vertical-flex();
 }
+
 input {
   color: $color-charcoal;
   background-color: $color-gray;
@@ -40,13 +41,16 @@ input {
   visibility: hidden;
   transition: all 0.3s ease 0s;
 }
+
 .login.active {
   opacity: 1;
   visibility: visible;
 }
+
 .login.active .login__form {
   opacity: 1;
 }
+
 .login__body {
   min-height: 100%;
   display: flex;
@@ -54,13 +58,14 @@ input {
   justify-content: center;
   padding: 30px 10px;
 }
+
 .login__close {
   position: absolute;
   top: 25px;
   right: 25px;
   width: 25px;
   height: 25px;
-  background-image: url("../../assets/svg/close.svg");
+  background-image: url('../../assets/svg/close.svg');
   background-size: cover;
   cursor: pointer;
 }
@@ -75,6 +80,7 @@ input {
   font-size: 1.6rem;
   color: $color-wrong;
 }
+
 .login__button {
   margin-bottom: 30px;
   width: 100%;

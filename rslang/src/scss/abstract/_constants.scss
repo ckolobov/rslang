@@ -7,7 +7,7 @@ $color-charcoal: #384047;
 $color-gray: #e8eeef;
 $color-wrong: red;
 $border-rounded: 6px;
-$font-primary: "Montserrat", sans-serif;
+$font-primary: 'Montserrat', sans-serif;
 $padding: 3rem;
 
 @mixin horizontal-flex() {
@@ -21,7 +21,6 @@ $padding: 3rem;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  
 }
 
 @mixin styled-text() {
