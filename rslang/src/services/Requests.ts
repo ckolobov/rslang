@@ -247,7 +247,6 @@ export class Request {
       body: JSON.stringify(user)
     });
     const content = await rawResponse.json();
-    console.log(content);
     return content;
   };
 }
