@@ -11,7 +11,9 @@
 }
 
 .login__content {
-  @include vertical-flex();
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 input {
@@ -75,13 +77,17 @@ input {
 }
 
 .login__error-text {
-  position: absolute;
-  left: 40px;
+  position: relative;
+  width: 100%;
+  min-height: 20px;
   font-size: 1.6rem;
   color: $color-wrong;
 }
 
 .login__button {
   margin-bottom: 30px;
-  width: 100%;
+}
+
+.login__text {
+  margin-top: 0;
 }
