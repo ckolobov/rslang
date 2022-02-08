@@ -14,11 +14,7 @@ class AuthorizationForm implements Component {
   }
 
   static authorizationInfo = {
-    isAuthorized: false,
-    token: '',
-    refreshToken: '',
-    userId: '',
-    email: '',
+    isAuthorized: false
   };
 
   public async render(): Promise<string> {
@@ -70,20 +66,22 @@ class AuthorizationForm implements Component {
     }
   }
 
+  private showErrorMessage(id: 'password-error' | 'email-error', errorText: string) {
+    const errorElement = document.getElementById(id) as HTMLElement;
+    errorElement.innerHTML = errorText;
+  }
+
   private async loginUser(email: string, password: string): Promise<void> {
     try {
       const res = await Request.loginUser({ email, password });
       AuthorizationForm.authorizationInfo.isAuthorized = true;
-      AuthorizationForm.authorizationInfo.refreshToken = res.refreshToken;
-      AuthorizationForm.authorizationInfo.token = res.token;
-      AuthorizationForm.authorizationInfo.userId = res.userId;
-      AuthorizationForm.authorizationInfo.email = email;
+      Object.assign(AuthorizationForm.authorizationInfo, res);
+      console.log(AuthorizationForm.authorizationInfo);
       this.setLocalStorage();
       console.log(res);
     } catch (error) {
-      const passwordErrorText = document.getElementById('password-error') as HTMLElement;
       if (error == 'SyntaxError: Unexpected token F in JSON at position 0') {
-        passwordErrorText.innerHTML = 'Wrong password';
+        this.showErrorMessage('password-error', 'Wrong password');
         return;
       }
       const res = await Request.createUser({
@@ -93,8 +91,10 @@ class AuthorizationForm implements Component {
       });
       console.log(res);
       if (res.error) {
-        const emailErrorText = document.getElementById('email-error') as HTMLElement;
-        res.error.errors.forEach((err) => err.message[1] === 'e' ? (emailErrorText.innerHTML = err.message) : (passwordErrorText.innerHTML = err.message));
+        res.error.errors.forEach((err) => { 
+          const id = err.message[1] === 'e' ? 'email-error' : 'password-error';
+          this.showErrorMessage(id, err.message);
+        })
         return;
       }
       await this.loginUser(email, password);
