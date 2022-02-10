@@ -36,9 +36,7 @@ class Textbook implements Page {
     for (let i = 0; i < res.length; i += 1) {
       result += await Drawer.drawComponent(WordCard, res[i]);
     }
-    const logStatus = (
-      document.getElementById('authorization-button') as HTMLElement
-    ).innerHTML;
+    const logStatus = (document.getElementById('authorization-button') as HTMLElement).innerHTML;
     result = result
       ? result
       : logStatus === 'Log in'
@@ -136,6 +134,7 @@ class Textbook implements Page {
     </section>
     <section>
       <div class="wrapper page-changer__wrapper" style="${groupX === 6 || groupX === 7 ? 'display:none' : ''}">
+        <a href="/#/audio_challenge" class="${logStatus === 'Log out' ? 'button' : 'button_grey'} game__button" style="pointer-events:${logStatus === 'Log out' ? '' : 'none'}">Audio challenge</a>
         <div class="page-buttons" id="page-buttons">
           <a href="/#/textbook/${groupX}/0" class="page-changer" id="page-start"><<</a>
           <a href="/#/textbook/${groupX}/${pageMinus}" class="page-changer" id="page-minus"><</a>
@@ -143,6 +142,7 @@ class Textbook implements Page {
           <a href="/#/textbook/${groupX}/${pagePlus}" class="page-changer" id="page-plus">></a>
           <a href="/#/textbook/${groupX}/29" class="page-changer" id="page-end">>></a>
         </div>
+        <a href="/#/sprint" class="${logStatus === 'Log out' ? 'button' : 'button_grey'} game__button" style="pointer-events:${logStatus === 'Log out' ? '' : 'none'}">Sprint</a>
       </div>
     </section>
       `;
