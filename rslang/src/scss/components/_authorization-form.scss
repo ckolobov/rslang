@@ -74,6 +74,11 @@ input {
 
 .login__text {
   text-align: center;
+  cursor: pointer;
+}
+
+.login__text:hover {
+  color: $color-primary;
 }
 
 .login__error-text {
@@ -86,8 +91,14 @@ input {
 
 .login__button {
   margin-bottom: 30px;
+  width: 265px;
+  padding: 1em 0;
 }
 
 .login__text {
   margin-top: 0;
+}
+
+input.error {
+  border: 2px solid $color-wrong;
 }
