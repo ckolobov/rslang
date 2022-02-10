@@ -16,6 +16,8 @@ class Header implements Component {
       class: 'header__button',
       text: 'Log in',
     });
+    const page = localStorage.getItem('rslang_current_page') || 0;
+    const group = localStorage.getItem('rslang_current_group') || 0;
     const view = `
     <div class="wrapper header__wrapper ${this.class ? this.class : ''}">
       <a href="/#" class="logo link">
@@ -25,7 +27,7 @@ class Header implements Component {
       <nav class="header__navigation">
         <ul class="navigation">
           <li>
-            <a href="/#/textbook" class="link navigation__link" id="textbook">Textbook</a>
+            <a href="/#/textbook/${group}/${page}" class="link navigation__link" id="textbook">Textbook</a>
           </li>
           <li>
             <a href="/#/audio_challenge" class="link navigation__link" id="audio_challenge"

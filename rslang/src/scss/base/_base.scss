@@ -15,6 +15,10 @@ body {
   overflow-x: hidden;
 }
 
+main {
+  flex-grow: 1;
+}
+
 a,
 button {
   all: unset;
