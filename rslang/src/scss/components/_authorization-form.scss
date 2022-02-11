@@ -20,10 +20,9 @@ input {
   color: $color-charcoal;
   background-color: $color-gray;
   box-shadow: 0 1px 0 rgba(0, 0, 0, 0.03) inset;
-  border: none;
+  border: 2px solid transparent;
   border-radius: 4px;
   padding: 1em;
-  margin-bottom: 1.2em;
   width: 100%;
   &:focus {
     outline: none;
@@ -82,9 +81,10 @@ input {
 }
 
 .login__error-text {
+  margin: 10px 0 0;
+  width: 287px;
   position: relative;
-  width: 100%;
-  min-height: 20px;
+  min-height: 38px;
   font-size: 1.6rem;
   color: $color-wrong;
 }
@@ -95,10 +95,6 @@ input {
   padding: 1em 0;
 }
 
-.login__text {
-  margin-top: 0;
-}
-
 input.error {
-  border: 2px solid $color-wrong;
+  border-color: $color-wrong;
 }

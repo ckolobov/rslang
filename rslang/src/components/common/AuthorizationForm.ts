@@ -4,6 +4,14 @@ import Button from './Button';
 import Request from '../../services/Requests';
 import '../../scss/components/_authorization-form.scss';
 
+type authorizationType = {
+  message: string;
+  name: string;
+  refreshToken: string;
+  token: string;
+  userId: string;
+};
+
 class AuthorizationForm implements Component {
   private class: string;
   private id: string;
@@ -17,13 +25,12 @@ class AuthorizationForm implements Component {
     this.action = this.loginUser;
   }
 
-  private text = {
-    'Sign in': ['Sign in', 'Don\'t have an account?', 'Log in'],
-    'Sign up': ['Sign up', 'Already have an account?', 'Create an account']
-  }
+  static isAuthorized = false;
+  static authorizationInfo: authorizationType;
 
-  static authorizationInfo = {
-    isAuthorized: false
+  private text = {
+    'Sign in': ['Sign in', "Don't have an account?", 'Log in'],
+    'Sign up': ['Sign up', 'Already have an account?', 'Create an account'],
   };
 
   public async render(): Promise<string> {
@@ -33,7 +40,6 @@ class AuthorizationForm implements Component {
       class: 'login__button',
       text: `${this.text[this.type][2]}`,
     });
-    
     const view = `
     <div id="${this.id ? this.id : ''}" class="${this.class ? this.class : ''}">
       <div class="login__body">
@@ -72,7 +78,8 @@ class AuthorizationForm implements Component {
   private getLocalStorage(): void {
     const userInfo: string | null = localStorage.getItem('userInfo');
     if (userInfo) {
-      Object.assign(AuthorizationForm.authorizationInfo, JSON.parse(userInfo));
+      AuthorizationForm.authorizationInfo = JSON.parse(userInfo);
+      AuthorizationForm.isAuthorized = true;
     }
   }
 
@@ -80,7 +87,7 @@ class AuthorizationForm implements Component {
     const errorElement = document.getElementById(id) as HTMLElement;
     errorElement.innerHTML = errorText;
     const input = errorElement.previousElementSibling;
-    if(input?.tagName === 'INPUT') {
+    if (input?.tagName === 'INPUT') {
       input.classList.add('error');
     }
   }
@@ -91,36 +98,32 @@ class AuthorizationForm implements Component {
       this.action = this.createUser;
     } else {
       this.type = 'Sign in';
-      this.action = this.loginUser; 
+      this.action = this.loginUser;
     }
   }
 
   private async createUser(email: string, password: string): Promise<void> {
-    const res = await Request.createUser({
-      name: 'user',
-      email,
-      password,
-    });
+    const res = await Request.createUser({name: 'user', email, password});
     if (res.error) {
-      res.error.errors.forEach((err) => { 
+      res.error.errors.forEach((err) => {
         const id = err.message[1] === 'e' ? 'email-error' : 'password-error';
         this.showErrorMessage(id, err.message);
-      })
+      });
       return;
-  } 
-  await this.loginUser(email, password);
-}
+    }
+    await this.loginUser(email, password);
+  }
 
   private async loginUser(email: string, password: string): Promise<void> {
     try {
       const res = await Request.loginUser({ email, password });
-      AuthorizationForm.authorizationInfo.isAuthorized = true;
-      Object.assign(AuthorizationForm.authorizationInfo, res);
+      AuthorizationForm.isAuthorized = true;
+      AuthorizationForm.authorizationInfo = res;
       this.setLocalStorage();
     } catch (error) {
       if (error == 'SyntaxError: Unexpected token F in JSON at position 0') {
         this.showErrorMessage('password-error', 'Wrong password');
-      } 
+      }
       if (error == 'SyntaxError: Unexpected token C in JSON at position 0') {
         this.showErrorMessage('email-error', `Account with this email doesn't exist.`);
       }
@@ -151,7 +154,7 @@ class AuthorizationForm implements Component {
       const email: string = form.elements['email'].value;
       const password: string = form.elements['password'].value;
       await this.action(email, password);
-      if (AuthorizationForm.authorizationInfo.isAuthorized) {
+      if (AuthorizationForm.isAuthorized) {
         const button = document.getElementById('authorization-button') as HTMLElement;
         button.innerHTML = 'Log out';
         closeForm();
@@ -167,7 +170,7 @@ class AuthorizationForm implements Component {
       button.innerHTML = this.text[this.type][2];
     });
 
-    inputs.forEach((input) => {   
+    inputs.forEach((input) => {
       input.addEventListener('focus', () => {
         input.classList.remove('error');
         if (input.nextElementSibling) input.nextElementSibling.innerHTML = '';

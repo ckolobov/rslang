@@ -12,7 +12,6 @@ class Header implements Component {
   }
 
   public async render(): Promise<string> {
-
     const authorizationForm = await Drawer.drawComponent(AuthorizationForm, {
       class: 'login',
       id: 'authorization-form',
@@ -21,7 +20,7 @@ class Header implements Component {
     const authorizationButton = await Drawer.drawComponent(Button, {
       id: 'authorization-button',
       class: 'header__button',
-      text: `${AuthorizationForm.authorizationInfo.isAuthorized ? 'Log out' : 'Log in'}`,
+      text: `${AuthorizationForm.isAuthorized ? 'Log out' : 'Log in'}`,
     });
 
     const view = `
@@ -72,8 +71,8 @@ class Header implements Component {
     const inputs = document.querySelectorAll('.login__form input') as NodeListOf<HTMLInputElement>;
 
     button.addEventListener('click', () => {
-      if (AuthorizationForm.authorizationInfo.isAuthorized) {
-        AuthorizationForm.authorizationInfo.isAuthorized = false;
+      if (AuthorizationForm.isAuthorized) {
+        AuthorizationForm.isAuthorized = false;
         inputs.forEach((input) => (input.value = ''));
         localStorage.clear();
         button.innerHTML = 'Log in';
