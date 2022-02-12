@@ -11,17 +11,18 @@
 }
 
 .login__content {
-  @include vertical-flex();
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 input {
   color: $color-charcoal;
   background-color: $color-gray;
   box-shadow: 0 1px 0 rgba(0, 0, 0, 0.03) inset;
-  border: none;
+  border: 2px solid transparent;
   border-radius: 4px;
   padding: 1em;
-  margin-bottom: 1.2em;
   width: 100%;
   &:focus {
     outline: none;
@@ -72,16 +73,28 @@ input {
 
 .login__text {
   text-align: center;
+  cursor: pointer;
+}
+
+.login__text:hover {
+  color: $color-primary;
 }
 
 .login__error-text {
-  position: absolute;
-  left: 40px;
+  margin: 10px 0 0;
+  width: 287px;
+  position: relative;
+  min-height: 38px;
   font-size: 1.6rem;
   color: $color-wrong;
 }
 
 .login__button {
   margin-bottom: 30px;
-  width: 100%;
+  width: 265px;
+  padding: 1em 0;
+}
+
+input.error {
+  border-color: $color-wrong;
 }
