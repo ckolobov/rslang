@@ -103,15 +103,21 @@ class AuthorizationForm implements Component {
   }
 
   private async createUser(email: string, password: string): Promise<void> {
-    const res = await Request.createUser({name: 'user', email, password});
-    if (res.error) {
-      res.error.errors.forEach((err) => {
-        const id = err.message[1] === 'e' ? 'email-error' : 'password-error';
-        this.showErrorMessage(id, err.message);
-      });
-      return;
+    try {
+      const res = await Request.createUser({name: 'user', email, password});
+      if (res.error) {
+        res.error.errors.forEach((err) => {
+          const id = err.message[1] === 'e' ? 'email-error' : 'password-error';
+          this.showErrorMessage(id, err.message);
+        });
+        return;
+      }
+      await this.loginUser(email, password);
+    } catch(error) {
+      if (error == 'SyntaxError: Unexpected token u in JSON at position 0') {
+        this.showErrorMessage('email-error', 'account with this email already exists');
+      }
     }
-    await this.loginUser(email, password);
   }
 
   private async loginUser(email: string, password: string): Promise<void> {
@@ -125,7 +131,7 @@ class AuthorizationForm implements Component {
         this.showErrorMessage('password-error', 'Wrong password');
       }
       if (error == 'SyntaxError: Unexpected token C in JSON at position 0') {
-        this.showErrorMessage('email-error', `Account with this email doesn't exist.`);
+        this.showErrorMessage('email-error', `account with this email doesn't exist.`);
       }
     }
   }
