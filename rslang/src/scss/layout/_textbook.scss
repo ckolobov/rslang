@@ -1,0 +1,165 @@
+@import '../abstract/constants';
+.textbook-navigation {
+  height: 130px;
+  width: calc(100vw - 20px);
+}
+
+.navigation-buttons{
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.textbook-navigation__wrapper {
+  margin: auto;
+  height: 100%;
+  width: calc(100vw - 20px);
+  background-color: $color-dark;
+  @include vertical-flex();
+  justify-content: flex-start;
+}
+
+
+.word-cards {
+  padding: 20px $padding;
+  @include horizontal-flex();
+  justify-content: space-around;
+  flex-wrap: wrap;
+}
+
+.word-card__card {
+  width: 340px;
+  height: 400px;
+  margin: 20px 0;
+  @include vertical-flex();
+  border-radius: 25px;
+  background-color: grey;
+  justify-content: flex-start;
+}
+
+.word-card__upper {
+  margin: 5px;
+  background-repeat: no-repeat;
+  background-size: cover;
+  width: 95%;
+  height: 215px;
+  border-radius: 25px;
+}
+
+.word-card__word {
+  background-color: rgba(226, 224, 224, 0.3);
+  border-radius: 25px;
+  padding: 10px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: end;
+  align-items: flex-end;
+  text-align: center;
+  color: black;
+}
+
+.word-card__main-word {
+  font: normal bold 30px/50px Arial;
+}
+
+.word-card__main-additional {
+  @include horizontal-flex();
+  font: normal bold 18px/20px Arial;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.word-card__audio {
+  background-image: url('../../assets/svg/audio.svg');
+  background-size: contain;
+  height: 20px;
+  width: 20px;
+  cursor: pointer;
+}
+
+.word-card_lower {
+  width: 100%;
+  font: normal normal 15px/16px Arial;
+  color:black;
+  text-align: end;
+}
+
+.card-text {
+  padding: 5px 10px;
+}
+
+hr {
+  border: 1px solid black;
+}
+
+.page-changer__wrapper {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.page-buttons {
+  display: flex;
+  width: 100%;
+  margin: 0 auto;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  font: normal normal 20px/20px Arial;
+}
+
+.page-changer {
+  &:hover {
+    color: gold;
+  }
+}
+
+.current-page-input {
+  width: 50px;
+  border-bottom: 2px solid pink;
+  padding: 5px;
+  box-sizing: border-box;
+  color: inherit;
+  text-align: center;
+  font-family: inherit;
+  font-size: inherit;
+}
+
+.level-info{
+  width: 100%;
+  border-radius: 50px;
+  margin: 5px 0;
+}
+
+.level-info-link {
+  @include horizontal-flex();
+}
+
+.level {
+  width: 5%;
+  font: normal bold 30px/30px Arial;
+}
+
+.level-name {
+  width: 15%;
+  font: normal bold 30px/30px Arial;
+}
+
+.level-description {
+  width: 80%;
+  font: normal normal 20px/20px Arial;
+}
+
+.game__button {
+  width: 300px;
+  height: 19px;
+  text-align: center;
+}

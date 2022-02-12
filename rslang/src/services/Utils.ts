@@ -1,4 +1,5 @@
-import { Request } from "../components/router/Router";
+import { Request } from '../components/router/Router';
+const url = 'http://localhost:3001';
 
 const Utils = {
   // --------------------------------
@@ -10,11 +11,15 @@ const Utils = {
     const request: Request = {
       resource: r[1],
       id: r[2],
-      verb: r[3]
+      verb: r[3],
     };
 
     return request;
-  }
-}
+  },
+
+  getFullURL: (hash) => {
+    return url + hash;
+  },
+};
 
 export default Utils;

@@ -3,6 +3,8 @@ import '../../scss/layout/_home.scss';
 
 class Home implements Page {
   public async render(): Promise<string> {
+    const page = localStorage.getItem('rslang_current_page') || 0;
+    const group = localStorage.getItem('rslang_current_group') || 0;
     const view = `
   <section class="promo">
     <div class="wrapper promo__wrapper">
@@ -12,7 +14,7 @@ class Home implements Page {
         >
         words
       </h2>
-      <a href="/#/textbook" class="button promo__button">Start</a>
+      <a href="/#/textbook/${group}/${page}" class="button promo__button">Start</a>
     </div>
   </section>
   <section class="team">
