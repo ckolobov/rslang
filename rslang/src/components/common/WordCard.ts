@@ -21,8 +21,13 @@ export interface Card {
   paginatedResults: object[];
 }
 
+export enum CardDifficultyStyle {
+  LEARNED = "card-difficulty-0",
+  NORMAL = "card-difficulty-1",
+  HARD = "card-difficulty-2",
+}
+
 class WordCard implements Component {
-  private _id: string;
   private id: string;
   private word: string;
   private wordTranslate: string;
@@ -38,8 +43,7 @@ class WordCard implements Component {
   private diff: number;
 
   public constructor(options: Card) {
-    this.id = options.id;
-    this._id = options._id;
+    this.id = options.id||options._id;
     this.word = options.word;
     this.wordTranslate = options.wordTranslate;
     this.transcription = options.transcription;
@@ -51,16 +55,16 @@ class WordCard implements Component {
     this.audioExample = Utils.getFullURL('/') + options.audioExample;
     this.textMeaningTranslate = options.textMeaningTranslate;
     this.textExampleTranslate = options.textExampleTranslate;
-    this.diff = options.diff;
+    this.diff = options.diff === undefined? 1: options.diff;
   }
 
   public async render(): Promise<string> {
     const groupX =
       Number(window.location.hash.split('/')[2]) ||
       (Number(window.location.hash.split('/')[2]) === 0 ? 0 : 7);
-      console.log(this.id||this._id, this.diff);
+      // console.log(this.id, this.diff);
     const view = `
-    <div class="word-card__card card-difficulty-${this.diff} group${groupX}" id="${this.id||this._id}">
+    <div class="word-card__card card-difficulty-${this.diff} group${groupX}" id="${this.id}">
       <div class="word-card__upper" style="background-image: url('${this.image}');">
         <div class="word-card__word">
           <div class="word-card__main-word">${this.word}</div>
@@ -69,8 +73,8 @@ class WordCard implements Component {
             <div class="word-card__transcription">${this.transcription}</div>
             <div class="word-card__audio">
               <audio src="${this.audio}" id="audio${this.id}"></audio>
-              <audio src="${this.audioMeaning}" id="meaning${this.id||this._id}"></audio>
-              <audio src="${this.audioExample}" id="example${this.id||this._id}"></audio>
+              <audio src="${this.audioMeaning}" id="meaning${this.id}"></audio>
+              <audio src="${this.audioExample}" id="example${this.id}"></audio>
             </div>
           </div>  
         </div>
@@ -94,19 +98,19 @@ class WordCard implements Component {
   private async changeWordDifficultyStatus(this:HTMLElement): Promise<void> {
     const parent = this.parentElement as HTMLElement;
     const card = parent.parentElement as HTMLElement;
-    let idX:string, tokenX:string;
-    try {
-      tokenX = (localStorage.getItem('userInfo') as string).split('"token":"')[1].toString().split('",')[0];
-      idX = (localStorage.getItem('userInfo') as string).split('"userId":"')[1].toString().split('",')[0];
-    } catch {
-      tokenX = '';
-      idX = '';
+    let idX = '';
+    let tokenX = '';
+    const userInfo: string | null = localStorage.getItem('userInfo');
+    if (userInfo) {
+      AuthorizationForm.authorizationInfo = JSON.parse(userInfo);
+      idX = AuthorizationForm.authorizationInfo.userId;
+      tokenX = AuthorizationForm.authorizationInfo.token;
     }
     const total_diff = Number(localStorage.getItem('rslang-current-page-total-difficulty'));
-    if (this.innerHTML === 'Добавить в сложное') {
+    if (card.classList.contains(`${CardDifficultyStyle.NORMAL}`)) {
       this.innerHTML = 'Убрать из сложного';
-      card.classList.remove('card-difficulty-1');
-      card.classList.add('card-difficulty-2');
+      card.classList.remove(`${CardDifficultyStyle.NORMAL}`);
+      card.classList.add(`${CardDifficultyStyle.HARD}`);
       (parent.children[1] as HTMLElement).setAttribute("style","pointer-events:none");
       await Request.editWordInUserWordsList(idX, tokenX, card.id, Difficulty.HARD, 0);
       localStorage.setItem('rslang-current-page-total-difficulty', `${total_diff + 1}`);
@@ -115,8 +119,8 @@ class WordCard implements Component {
       }
     } else {
       this.innerHTML = 'Добавить в сложное';
-      card.classList.remove('card-difficulty-2');
-      card.classList.add('card-difficulty-1');
+      card.classList.remove(`${CardDifficultyStyle.HARD}`);
+      card.classList.add(`${CardDifficultyStyle.NORMAL}`);
       (parent.children[1] as HTMLElement).setAttribute("style","pointer-events:''");
       await Request.editWordInUserWordsList(idX, tokenX, card.id, Difficulty.NORMAL, 0);
       localStorage.setItem('rslang-current-page-total-difficulty', `${total_diff - 1}`);
@@ -129,19 +133,19 @@ class WordCard implements Component {
   private async changeWordLearnedStatus(this:HTMLElement): Promise<void> {
     const parent = this.parentElement as HTMLElement;
     const card = parent.parentElement as HTMLElement;
-    let idX:string, tokenX: string;
-    try {
-      tokenX = (localStorage.getItem('userInfo') as string).split('"token":"')[1].toString().split('",')[0];
-      idX = (localStorage.getItem('userInfo') as string).split('"userId":"')[1].toString().split('",')[0];
-    } catch {
-      tokenX = '';
-      idX = '';
+    let idX = '';
+    let tokenX = '';
+    const userInfo: string | null = localStorage.getItem('userInfo');
+    if (userInfo) {
+      AuthorizationForm.authorizationInfo = JSON.parse(userInfo);
+      idX = AuthorizationForm.authorizationInfo.userId;
+      tokenX = AuthorizationForm.authorizationInfo.token;
     }
     const total_diff = Number(localStorage.getItem('rslang-current-page-total-difficulty'));
-    if (this.innerHTML === 'Добавить в изученное') {
+    if (card.classList.contains(`${CardDifficultyStyle.NORMAL}`)) {
       this.innerHTML = 'Убрать из изученного';
-      card.classList.remove('card-difficulty-1');
-      card.classList.add('card-difficulty-0');
+      card.classList.remove(`${CardDifficultyStyle.NORMAL}`);
+      card.classList.add(`${CardDifficultyStyle.LEARNED}`);
       (parent.children[0] as HTMLElement).setAttribute("style","pointer-events:none");
       await Request.editWordInUserWordsList(idX, tokenX, card.id, Difficulty.LEARNED, 0);
       localStorage.setItem('rslang-current-page-total-difficulty', `${total_diff - 1}`);
@@ -150,8 +154,8 @@ class WordCard implements Component {
       }
     } else {
       this.innerHTML = 'Добавить в изученное';
-      card.classList.remove('card-difficulty-0');
-      card.classList.add('card-difficulty-1');
+      card.classList.remove(`${CardDifficultyStyle.LEARNED}`);
+      card.classList.add(`${CardDifficultyStyle.NORMAL}`);
       (parent.children[0] as HTMLElement).setAttribute("style","pointer-events:''");
       await Request.editWordInUserWordsList(idX, tokenX, card.id, Difficulty.NORMAL, 0);
       localStorage.setItem('rslang-current-page-total-difficulty', `${total_diff + 1}`);

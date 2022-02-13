@@ -5,17 +5,13 @@ import Request, { Difficulty } from '../../services/Requests';
 import '../../scss/layout/_textbook.scss';
 import { Card } from '../common/WordCard';
 import AuthorizationForm from '../common/AuthorizationForm';
+import Utils from '../../services/Utils';
 
 class Textbook implements Page {
   private showActiveGroupButton(): void {
     const buttons = document.querySelectorAll('.textbook__button');
     const hash = window.location.hash.split('/');
-    let groupX = 0;
-    if (hash[2] === 'info') {
-      groupX = 7;
-    } else {
-      groupX = Number(window.location.hash.split('/')[2]);
-    }
+    const groupX = hash[2] === 'info' ? 7 : Number(hash[2]);
     buttons.forEach((el) => el.classList.remove('button'));
     buttons.forEach((el) => el.classList.add('button_grey'));
     buttons[groupX].classList.remove('button_grey');
@@ -23,22 +19,27 @@ class Textbook implements Page {
   }
 
   public async render(): Promise<string> {
-    const groupX =
-      Number(window.location.hash.split('/')[2]) ||
-      (Number(window.location.hash.split('/')[2]) === 0 ? 0 : 7);
-    const pageX = Number(window.location.hash.split('/')[3]);
-    let idX: string, tokenX: string;
-    try {
-      tokenX = (localStorage.getItem('userInfo') as string).split('"token":"')[1].toString().split('",')[0];
-      idX = (localStorage.getItem('userInfo') as string).split('"userId":"')[1].toString().split('",')[0];
-    } catch {
-      tokenX = '';
-      idX = '';
+    const url = Utils.parseRequestURL();
+    const groupX = Number(url.id) || (Number(url.id) === 0 ? 0 : 7);
+    const pageX = Number(url.verb);
+    const userInfo: string | null = localStorage.getItem('userInfo');
+    let idX = '';
+    let tokenX = '';
+    if (userInfo) {
+      AuthorizationForm.authorizationInfo = JSON.parse(userInfo);
+      idX = AuthorizationForm.authorizationInfo.userId;
+      tokenX = AuthorizationForm.authorizationInfo.token;
     }
     const pageMinus = pageX > 0 ? pageX - 1 : pageX;
     const pagePlus = pageX < 29 ? pageX + 1 : pageX;
-    const res: Card[] = groupX === 6 && AuthorizationForm.isAuthorized? await Request.getAggregatedWordsList({id: idX, token: tokenX, filter: '{"userWord.difficulty":"2"}'}): await Request.getWordsList({group: groupX, page: pageX});
-    const arrayLength: number = groupX === 6 && AuthorizationForm.isAuthorized? res[0].paginatedResults.length: res.length;
+    const res: Card[] = 
+      groupX === 6 && AuthorizationForm.isAuthorized ? 
+      await Request.getAggregatedWordsList({id: idX, token: tokenX, filter: '{"userWord.difficulty":"2"}'}): 
+      await Request.getWordsList({group: groupX, page: pageX});
+    const arrayLength: number = 
+      groupX === 6 && AuthorizationForm.isAuthorized ? 
+      res[0].paginatedResults.length: 
+      res.length;
     let result = '';
     let total_diff = 0;
     for (let i = 0; i < arrayLength; i += 1) {
@@ -62,7 +63,7 @@ class Textbook implements Page {
         result += await Drawer.drawComponent(WordCard, res[i]);
       }
     }
-    setTimeout(()=>{localStorage.setItem("rslang-current-page-total-difficulty", `${total_diff}`),100});
+    localStorage.setItem("rslang-current-page-total-difficulty", `${total_diff}`);
     const logStatus = (document.getElementById('authorization-button') as HTMLElement).innerHTML;
     result = result
       ? result
