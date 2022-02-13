@@ -1,9 +1,10 @@
 import Page from './Page';
 import Drawer from '../drawer/Drawer';
 import WordCard from '../common/WordCard';
-import Request from '../../services/Requests';
+import Request, { Difficulty } from '../../services/Requests';
 import '../../scss/layout/_textbook.scss';
 import { Card } from '../common/WordCard';
+import AuthorizationForm from '../common/AuthorizationForm';
 
 class Textbook implements Page {
   private showActiveGroupButton(): void {
@@ -26,16 +27,42 @@ class Textbook implements Page {
       Number(window.location.hash.split('/')[2]) ||
       (Number(window.location.hash.split('/')[2]) === 0 ? 0 : 7);
     const pageX = Number(window.location.hash.split('/')[3]);
+    let idX: string, tokenX: string;
+    try {
+      tokenX = (localStorage.getItem('userInfo') as string).split('"token":"')[1].toString().split('",')[0];
+      idX = (localStorage.getItem('userInfo') as string).split('"userId":"')[1].toString().split('",')[0];
+    } catch {
+      tokenX = '';
+      idX = '';
+    }
     const pageMinus = pageX > 0 ? pageX - 1 : pageX;
     const pagePlus = pageX < 29 ? pageX + 1 : pageX;
-    const res: Card[] = await Request.getWordsList({
-      group: groupX,
-      page: pageX,
-    });
+    const res: Card[] = groupX === 6 && AuthorizationForm.isAuthorized? await Request.getAggregatedWordsList({id: idX, token: tokenX, filter: '{"userWord.difficulty":"2"}'}): await Request.getWordsList({group: groupX, page: pageX});
+    const arrayLength: number = groupX === 6 && AuthorizationForm.isAuthorized? res[0].paginatedResults.length: res.length;
     let result = '';
-    for (let i = 0; i < res.length; i += 1) {
-      result += await Drawer.drawComponent(WordCard, res[i]);
+    let total_diff = 0;
+    for (let i = 0; i < arrayLength; i += 1) {
+      if (groupX===6 && AuthorizationForm.isAuthorized) {
+        res[0].paginatedResults[i]['diff'] = 1; //надо 2, но чтобы не фонило красным сделал 1
+        result += await Drawer.drawComponent(WordCard, res[0].paginatedResults[i]);
+      } else {
+        if(AuthorizationForm.isAuthorized) {
+          let wordDiff: number;
+          try {
+            const ans = await Request.getWordFromUserWordsList(idX, tokenX, res[i].id);
+            wordDiff = Number(ans.difficulty);
+            total_diff += wordDiff;
+          } catch {
+            wordDiff = 1;
+            await Request.SetWordInUsersList(idX, tokenX, res[i].id, Difficulty.NORMAL, 0);
+            total_diff += wordDiff;
+          }
+          res[i].diff = wordDiff;
+        }
+        result += await Drawer.drawComponent(WordCard, res[i]);
+      }
     }
+    setTimeout(()=>{localStorage.setItem("rslang-current-page-total-difficulty", `${total_diff}`),100});
     const logStatus = (document.getElementById('authorization-button') as HTMLElement).innerHTML;
     result = result
       ? result
@@ -211,9 +238,12 @@ class Textbook implements Page {
         setTimeout(this.showActiveGroupButton, 100);
       }
     });
-    document
-      .querySelectorAll('.word-card__audio')
-      .forEach((el) => el.addEventListener('click', this.playAudio));
+    document.querySelectorAll('.word-card__audio').forEach((el) => el.addEventListener('click', this.playAudio));
+    setTimeout(()=>{
+      if(Number(localStorage.getItem('rslang-current-page-total-difficulty')) === 0) {
+        (document.querySelectorAll('.game__button') as NodeListOf<HTMLElement>).forEach((el)=>el.setAttribute('style', 'pointer-events:none'));
+      }
+    }, 200);
     return;
   }
 }

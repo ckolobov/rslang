@@ -165,6 +165,7 @@ class AuthorizationForm implements Component {
         button.innerHTML = 'Log out';
         closeForm();
       }
+      window.location.reload();
     });
 
     switchForm.addEventListener('click', () => {

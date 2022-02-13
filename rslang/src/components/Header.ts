@@ -79,6 +79,7 @@ class Header implements Component {
         inputs.forEach((input) => (input.value = ''));
         localStorage.clear();
         button.innerHTML = 'Log in';
+        window.location.reload();
       } else {
         form.classList.add('active');
       }
