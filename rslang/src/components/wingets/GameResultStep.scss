@@ -1,0 +1,9 @@
+@import '../../scss/abstract/constants';
+
+.results--correct {
+  color: $color-correct;
+}
+
+.results--wrong {
+  color: $color-wrong;
+}

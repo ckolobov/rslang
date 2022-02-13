@@ -16,17 +16,15 @@ export interface Request {
   verb: string;
 }
 
-const routes: Record<string, Page> = {
-  '/': new Home(),
-  '/textbook': new Textbook(),
-  '/statistics': new Statistics(),
-  '/audio_challenge': new AudioChallenge(),
-  '/sprint': new Sprint(),
+const routes: Record<string, new () => Page> = {
+  '/': Home,
+  '/textbook': Textbook,
+  '/statistics': Statistics,
+  '/audio_challenge': AudioChallenge,
+  '/game-sprint': Sprint,
 };
-const errorPage: Error404 = new Error404();
 
 class Router {
-  private;
   private async router(): Promise<void> {
     // Get the parsed URl from the addressbar
     const request: Request = Utils.parseRequestURL();
@@ -38,14 +36,14 @@ class Router {
 
     // Get the page from our hash of supported routes.
     // If the parsed URL is not in our list of supported routes, select the 404 page instead
-    const page: Page = routes[parsedURL] ? routes[parsedURL] : errorPage;
+    const page: new () => Page = routes[parsedURL] ? routes[parsedURL] : Error404;
     Drawer.drawPage(page);
   }
 
   private async renderHeaderAndFooter(): Promise<void> {
-    const header = await Drawer.drawComponent(Header);
+    const header = await Drawer.drawComponent(Header, {class: 'header'});
     (document.getElementById('header_container') as HTMLElement).innerHTML = header;
-    const footer = await Drawer.drawComponent(Footer);
+    const footer = await Drawer.drawComponent(Footer, {class: 'footer'});
     (document.getElementById('footer_container') as HTMLElement).innerHTML = footer;
   }
 
