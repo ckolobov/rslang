@@ -17,6 +17,24 @@ const Utils = {
     return request;
   },
 
+  randomizeArray: (arr: []) => {
+    const result = [...arr];
+    let currentIndex = result.length;
+    let randomIndex: number;
+
+    while (currentIndex !== 0) {
+      randomIndex = Math.floor(Math.random() * currentIndex);
+      currentIndex -= 1;
+
+      [result[currentIndex], result[randomIndex]] = [
+        result[randomIndex],
+        result[currentIndex],
+      ];
+    }
+
+    return result;
+  },
+  
   getFullURL: (hash:string) => {
     return url + hash;
   },

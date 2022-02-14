@@ -42,7 +42,7 @@ class Header implements Component {
               >Audio challenge</a
             >
           </li>
-          <li><a href="/#/sprint" class="link navigation__link" id="sprint">Sprint</a></li>
+          <li><a href="/#/game-sprint" class="link navigation__link" id="sprint">Sprint</a></li>
           <li>
             <a href="/#/statistics" class="link navigation__link" id="statistics">Statistics</a>
           </li>
