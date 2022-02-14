@@ -18,7 +18,7 @@ export interface Request {
 
 const routes: Record<string, new () => Page> = {
   '/': Home,
-  '/textbook': Textbook,
+  '/textbook/:id/:verb': Textbook,
   '/statistics': Statistics,
   '/audio_challenge': AudioChallenge,
   '/game-sprint': Sprint,

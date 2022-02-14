@@ -1,4 +1,5 @@
 import { Request } from '../components/router/Router';
+const url = 'http://localhost:3001';
 
 const Utils = {
   // --------------------------------
@@ -32,6 +33,10 @@ const Utils = {
     }
 
     return result;
+  },
+  
+  getFullURL: (hash:string) => {
+    return url + hash;
   },
 };
 

@@ -1,5 +1,6 @@
 @import '../abstract/constants';
-.button {
+.button,
+.button_grey {
   display: block;
   text-align: center;
   text-decoration: none;
@@ -26,4 +27,13 @@
   &:active {
     transform: scale(0.9);
   }
+}
+
+.button_grey {
+  background-image: linear-gradient(
+    to right,
+    $color-light 0%,
+    $color-charcoal 50%,
+    $color-light 100%
+  );
 }
