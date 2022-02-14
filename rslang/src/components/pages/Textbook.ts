@@ -1,41 +1,69 @@
 import Page from './Page';
 import Drawer from '../drawer/Drawer';
 import WordCard from '../common/WordCard';
-import Request from '../../services/Requests';
+import Request, { Difficulty } from '../../services/Requests';
 import '../../scss/layout/_textbook.scss';
 import { Card } from '../common/WordCard';
+import AuthorizationForm from '../common/AuthorizationForm';
+import Utils from '../../services/Utils';
 
 class Textbook implements Page {
   private showActiveGroupButton(): void {
     const buttons = document.querySelectorAll('.textbook__button');
     const hash = window.location.hash.split('/');
-    let groupX = 0;
-    if (hash[2] === 'info') {
-      groupX = 7;
-    } else {
-      groupX = Number(window.location.hash.split('/')[2]);
-    }
+    const currentGroup = hash[2] === 'info' ? 7 : Number(hash[2]);
     buttons.forEach((el) => el.classList.remove('button'));
     buttons.forEach((el) => el.classList.add('button_grey'));
-    buttons[groupX].classList.remove('button_grey');
-    buttons[groupX].classList.add('button');
+    buttons[currentGroup].classList.remove('button_grey');
+    buttons[currentGroup].classList.add('button');
   }
 
   public async render(): Promise<string> {
-    const groupX =
-      Number(window.location.hash.split('/')[2]) ||
-      (Number(window.location.hash.split('/')[2]) === 0 ? 0 : 7);
-    const pageX = Number(window.location.hash.split('/')[3]);
-    const pageMinus = pageX > 0 ? pageX - 1 : pageX;
-    const pagePlus = pageX < 29 ? pageX + 1 : pageX;
-    const res: Card[] = await Request.getWordsList({
-      group: groupX,
-      page: pageX,
-    });
-    let result = '';
-    for (let i = 0; i < res.length; i += 1) {
-      result += await Drawer.drawComponent(WordCard, res[i]);
+    const url = Utils.parseRequestURL();
+    const currentGroup = Number(url.id) || (Number(url.id) === 0 ? 0 : 7);
+    const currentPage = Number(url.verb);
+    const userInfo: string | null = localStorage.getItem('userInfo');
+    let currentId = '';
+    let currentToken = '';
+    if (userInfo) {
+      AuthorizationForm.authorizationInfo = JSON.parse(userInfo);
+      currentId = AuthorizationForm.authorizationInfo.userId;
+      currentToken = AuthorizationForm.authorizationInfo.token;
     }
+    const pageMinus = currentPage > 0 ? currentPage - 1 : currentPage;
+    const pagePlus = currentPage < 29 ? currentPage + 1 : currentPage;
+    const res: Card[] = 
+      currentGroup === 6 && AuthorizationForm.isAuthorized ? 
+      await Request.getAggregatedWordsList({id: currentId, token: currentToken, filter: '{"userWord.difficulty":"2"}'}): 
+      await Request.getWordsList({group: currentGroup, page: currentPage});
+    const arrayLength: number = 
+      currentGroup === 6 && AuthorizationForm.isAuthorized ? 
+      res[0].paginatedResults.length: 
+      res.length;
+    let result = '';
+    let total_diff = 0;
+    for (let i = 0; i < arrayLength; i += 1) {
+      if (currentGroup===6 && AuthorizationForm.isAuthorized) {
+        res[0].paginatedResults[i]['diff'] = 1; //надо 2, но чтобы не фонило красным сделал 1
+        result += await Drawer.drawComponent(WordCard, res[0].paginatedResults[i]);
+      } else {
+        if(AuthorizationForm.isAuthorized) {
+          let wordDiff: number;
+          try {
+            const ans = await Request.getWordFromUserWordsList(currentId, currentToken, res[i].id);
+            wordDiff = Number(ans.difficulty);
+            total_diff += wordDiff;
+          } catch {
+            wordDiff = 1;
+            await Request.SetWordInUsersList(currentId, currentToken, res[i].id, Difficulty.NORMAL, 0);
+            total_diff += wordDiff;
+          }
+          res[i].diff = wordDiff;
+        }
+        result += await Drawer.drawComponent(WordCard, res[i]);
+      }
+    }
+    localStorage.setItem("rslang-current-page-total-difficulty", `${total_diff}`);
     const logStatus = (document.getElementById('authorization-button') as HTMLElement).innerHTML;
     result = result
       ? result
@@ -118,29 +146,29 @@ class Textbook implements Page {
     <div class="textbook-navigation">
       <div class="wrapper textbook-navigation__wrapper">
         <div class="navigation-buttons">
-          <a href="/#/textbook/0/0" class="${groupX === 0 ? 'button' : 'button_grey'} textbook__button">A1</a>
-          <a href="/#/textbook/1/0" class="${groupX === 1 ? 'button' : 'button_grey'} textbook__button">A2</a>
-          <a href="/#/textbook/2/0" class="${groupX === 2 ? 'button' : 'button_grey'} textbook__button">B1</a>
-          <a href="/#/textbook/3/0" class="${groupX === 3 ? 'button' : 'button_grey'} textbook__button">B2</a>
-          <a href="/#/textbook/4/0" class="${groupX === 4 ? 'button' : 'button_grey'} textbook__button">C1</a>
-          <a href="/#/textbook/5/0" class="${groupX === 5 ? 'button' : 'button_grey'} textbook__button">C2</a>
-          <a href="/#/textbook/6/0" class="${groupX === 6 ? 'button' : 'button_grey'} textbook__button">User words</a>
-          <a href="/#/textbook/info/0" class="${groupX === 7 ? 'button' : 'button_grey'} textbook__button">info</a>
+          <a href="/#/textbook/0/0" class="${currentGroup === 0 ? 'button' : 'button_grey'} textbook__button">A1</a>
+          <a href="/#/textbook/1/0" class="${currentGroup === 1 ? 'button' : 'button_grey'} textbook__button">A2</a>
+          <a href="/#/textbook/2/0" class="${currentGroup === 2 ? 'button' : 'button_grey'} textbook__button">B1</a>
+          <a href="/#/textbook/3/0" class="${currentGroup === 3 ? 'button' : 'button_grey'} textbook__button">B2</a>
+          <a href="/#/textbook/4/0" class="${currentGroup === 4 ? 'button' : 'button_grey'} textbook__button">C1</a>
+          <a href="/#/textbook/5/0" class="${currentGroup === 5 ? 'button' : 'button_grey'} textbook__button">C2</a>
+          <a href="/#/textbook/6/0" class="${currentGroup === 6 ? 'button' : 'button_grey'} textbook__button">User words</a>
+          <a href="/#/textbook/info/0" class="${currentGroup === 7 ? 'button' : 'button_grey'} textbook__button">info</a>
         </div>
       </div>
     </div>
     <section class="word-cards">
-      ${groupX === 7 ? info : result}
+      ${currentGroup === 7 ? info : result}
     </section>
     <section>
-      <div class="wrapper page-changer__wrapper" style="${groupX === 6 || groupX === 7 ? 'display:none' : ''}">
+      <div class="wrapper page-changer__wrapper" style="${currentGroup === 6 || currentGroup === 7 ? 'display:none' : ''}">
         <a href="/#/audio_challenge" class="${logStatus === 'Log out' ? 'button' : 'button_grey'} game__button" style="pointer-events:${logStatus === 'Log out' ? '' : 'none'}">Audio challenge</a>
         <div class="page-buttons" id="page-buttons">
-          <a href="/#/textbook/${groupX}/0" class="page-changer" id="page-start"><<</a>
-          <a href="/#/textbook/${groupX}/${pageMinus}" class="page-changer" id="page-minus"><</a>
-          <div class="current-page" id="current-page"><span id="current-page-span">${pageX + 1}/30</span></div>
-          <a href="/#/textbook/${groupX}/${pagePlus}" class="page-changer" id="page-plus">></a>
-          <a href="/#/textbook/${groupX}/29" class="page-changer" id="page-end">>></a>
+          <a href="/#/textbook/${currentGroup}/0" class="page-changer" id="page-start"><<</a>
+          <a href="/#/textbook/${currentGroup}/${pageMinus}" class="page-changer" id="page-minus"><</a>
+          <div class="current-page" id="current-page"><span id="current-page-span">${currentPage + 1}/30</span></div>
+          <a href="/#/textbook/${currentGroup}/${pagePlus}" class="page-changer" id="page-plus">></a>
+          <a href="/#/textbook/${currentGroup}/29" class="page-changer" id="page-end">>></a>
         </div>
         <a href="/#/sprint" class="${logStatus === 'Log out' ? 'button' : 'button_grey'} game__button" style="pointer-events:${logStatus === 'Log out' ? '' : 'none'}">Sprint</a>
       </div>
@@ -152,13 +180,13 @@ class Textbook implements Page {
   private updateGroupPage(): void {
     const hash = window.location.hash.split('/');
     if (hash[1] === 'textbook' && hash.length === 4) {
-      const groupX = Number(window.location.hash.split('/')[2]);
-      const pageX = Number(window.location.hash.split('/')[3]);
-      localStorage.setItem('rslang_current_page', `${pageX}`);
-      localStorage.setItem('rslang_current_group', `${groupX}`);
+      const currentGroup = Number(window.location.hash.split('/')[2]);
+      const currentPage = Number(window.location.hash.split('/')[3]);
+      localStorage.setItem('rslang_current_page', `${currentPage}`);
+      localStorage.setItem('rslang_current_group', `${currentGroup}`);
       (document.getElementById('textbook') as HTMLLinkElement).setAttribute(
         'href',
-        `/#/textbook/${groupX}/${pageX}`
+        `/#/textbook/${currentGroup}/${currentPage}`
       );
     }
   }
@@ -166,25 +194,25 @@ class Textbook implements Page {
   private updatePageButtons(): void {
     const hash = window.location.hash.split('/');
     if (hash[1] === 'textbook' && hash.length === 4) {
-      const groupX = Number(window.location.hash.split('/')[2]);
-      const pageX = Number(window.location.hash.split('/')[3]);
+      const currentGroup = Number(window.location.hash.split('/')[2]);
+      const currentPage = Number(window.location.hash.split('/')[3]);
       (document.getElementById('page-start') as HTMLLinkElement).setAttribute(
         'href',
-        `/#/textbook/${groupX}/0`
+        `/#/textbook/${currentGroup}/0`
       );
       (document.getElementById('page-end') as HTMLLinkElement).setAttribute(
         'href',
-        `/#/textbook/${groupX}/29`
+        `/#/textbook/${currentGroup}/29`
       );
-      if (pageX > 0)
+      if (currentPage > 0)
         (document.getElementById('page-minus') as HTMLLinkElement).setAttribute(
           'href',
-          `/#/textbook/${groupX}/${pageX - 1}`
+          `/#/textbook/${currentGroup}/${currentPage - 1}`
         );
-      if (pageX < 29)
+      if (currentPage < 29)
         (document.getElementById('page-plus') as HTMLLinkElement).setAttribute(
           'href',
-          `/#/textbook/${groupX}/${pageX + 1}`
+          `/#/textbook/${currentGroup}/${currentPage + 1}`
         );
     }
   }
@@ -211,9 +239,12 @@ class Textbook implements Page {
         setTimeout(this.showActiveGroupButton, 100);
       }
     });
-    document
-      .querySelectorAll('.word-card__audio')
-      .forEach((el) => el.addEventListener('click', this.playAudio));
+    document.querySelectorAll('.word-card__audio').forEach((el) => el.addEventListener('click', this.playAudio));
+    setTimeout(()=>{
+      if(Number(localStorage.getItem('rslang-current-page-total-difficulty')) === 0) {
+        (document.querySelectorAll('.game__button') as NodeListOf<HTMLElement>).forEach((el)=>el.setAttribute('style', 'pointer-events:none'));
+      }
+    }, 200);
     return;
   }
 }

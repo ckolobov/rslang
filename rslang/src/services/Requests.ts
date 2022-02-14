@@ -3,10 +3,9 @@ import Utils from './Utils';
 const url = Utils.getFullURL('');
 
 export enum Difficulty {
-  CASUAL,
-  NORMAL1,
-  NORMAL2,
-  HARD,
+  LEARNED,  // добавлено в изученное
+  NORMAL,   // Не добавлено в изученное/сложное
+  HARD,     // добавлено в сложное
 }
 export class Request {
   // 1. Получить слова определенной группы, определенной страницы
@@ -131,7 +130,8 @@ export class Request {
     id: string,
     token: string,
     wordid: string,
-    difficulty: Difficulty
+    difficulty: Difficulty,
+    correctInRow: number //при добавлении в список сложных/изученных вручную не нужен. Только в играх.
   ) {
     const rawResponse = await fetch(`${url}/users/${id}/words/${wordid}`, {
       method: 'POST',
@@ -142,6 +142,9 @@ export class Request {
       },
       body: JSON.stringify({
         difficulty: `${difficulty}`,
+        optional:{
+          correctInRow: `${correctInRow}`
+        }
       }),
     });
     const content = await rawResponse.json();
@@ -170,7 +173,8 @@ export class Request {
     id: string,
     token: string,
     wordid: string,
-    difficulty: Difficulty
+    difficulty: Difficulty,
+    correctInRow: number //при добавлении в список сложных/изученных вручную не нужен. Только в играх.
   ) {
     const rawResponse = await fetch(`${url}/users/${id}/words/${wordid}`, {
       method: 'PUT',
@@ -181,6 +185,9 @@ export class Request {
       },
       body: JSON.stringify({
         difficulty: `${difficulty}`,
+        optional: {
+          correctInRow: `${correctInRow}`
+        },
       }),
     });
     const content = await rawResponse.json();

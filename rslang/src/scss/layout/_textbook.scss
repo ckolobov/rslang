@@ -32,12 +32,27 @@
 
 .word-card__card {
   width: 340px;
-  height: 400px;
+  height: 450px;
   margin: 20px 0;
   @include vertical-flex();
   border-radius: 25px;
-  background-color: grey;
   justify-content: flex-start;
+}
+
+.group6 {
+  height: 400px;
+}
+
+.card-difficulty-0 {
+  background-color: rgb(133, 255, 133)
+}
+
+.card-difficulty-1 {
+  background-color: grey;
+}
+
+.card-difficulty-2 {
+  background-color: rgb(255, 133, 133);
 }
 
 .word-card__upper {
@@ -94,6 +109,45 @@
 
 hr {
   border: 1px solid black;
+}
+
+.difficulty-buttons-hide{
+  display: none;
+}
+
+.difficulty-buttons-active{
+  margin-bottom: 10px;
+  margin-top: auto;
+  display: flex;
+  flex-wrap: nowrap;
+  flex-direction: row;
+  justify-content: space-around;
+  width: 100%;
+  color: black;
+  font: normal normal 15px/15px Arial;
+}
+
+.difficulty-buttons-inactive{
+  margin-bottom: 10px;
+  margin-top: auto;
+  display: flex;
+  flex-wrap: nowrap;
+  flex-direction: row;
+  justify-content: space-around;
+  width: 100%;
+  color: rgb(70, 69, 69);
+  font: normal normal 15px/15px Arial;
+  pointer-events: none;
+}
+
+.diff-button {
+  border: 2px solid black;
+  border-radius: 25px;
+  padding: 5px;
+  cursor: pointer;
+  &:hover {
+    background-color: $color-additional;
+  }
 }
 
 .page-changer__wrapper {
