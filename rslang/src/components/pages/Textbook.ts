@@ -49,17 +49,34 @@ class Textbook implements Page {
       } else {
         if(AuthorizationForm.isAuthorized) {
           let wordDiff: number;
+          let total_correct_sprint: number;
+          let total_wrong_sprint: number;
+          let total_correct_audioChallenge: number;
+          let total_wrong_audioChallenge: number;
           try {
             const ans = await Request.getWordFromUserWordsList(currentId, currentToken, res[i].id);
             wordDiff = Number(ans.difficulty);
+            total_correct_sprint = Number(ans.optional.correctTotalSprint);
+            total_wrong_sprint = Number(ans.optional.wrongTotalSprint);
+            total_correct_audioChallenge = Number(ans.optional.correctTotalAudioChallenge);
+            total_wrong_audioChallenge = Number(ans.optional.wrongTotalAudioChallenge);
             total_diff += wordDiff;
           } catch {
             wordDiff = 1;
-            await Request.SetWordInUsersList(currentId, currentToken, res[i].id, Difficulty.NORMAL, 0);
+            total_correct_sprint = 0;
+            total_wrong_sprint = 0;
+            total_correct_audioChallenge = 0;
+            total_wrong_audioChallenge = 0;
+            await Request.SetWordInUsersList(currentId, currentToken, res[i].id, Difficulty.NORMAL, 0, 0, 0, 0, 0);
             total_diff += wordDiff;
           }
           res[i].diff = wordDiff;
+          res[i].correctSprint = total_correct_sprint;
+          res[i].wrongSprint = total_wrong_sprint;
+          res[i].correctAudioChallenge = total_correct_audioChallenge;
+          res[i].wrongAudioChallenge = total_wrong_audioChallenge;
         }
+        console.log(res[i]);
         result += await Drawer.drawComponent(WordCard, res[i]);
       }
     }

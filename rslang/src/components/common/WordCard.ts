@@ -18,7 +18,11 @@ export interface Card {
   textExampleTranslate: string;
   audioExample: string;
   diff: number;
-  paginatedResults: object[];
+  correctSprint: number;
+  wrongSprint: number;
+  correctAudioChallenge: number;
+  wrongAudioChallenge: number;
+  paginatedResults: Card[];
 }
 
 export enum CardDifficultyStyle {
@@ -41,6 +45,10 @@ class WordCard implements Component {
   private textMeaningTranslate: string;
   private textExampleTranslate: string;
   private diff: number;
+  private correctSprint: number;
+  private wrongSprint: number;
+  private correctAudioChallenge: number;
+  private wrongAudioChallenge: number;
 
   public constructor(options: Card) {
     this.id = options.id||options._id;
@@ -56,11 +64,50 @@ class WordCard implements Component {
     this.textMeaningTranslate = options.textMeaningTranslate;
     this.textExampleTranslate = options.textExampleTranslate;
     this.diff = options.diff === undefined? 1: options.diff;
+    this.correctSprint = options.correctSprint === undefined? 0: options.correctSprint;
+    this.wrongSprint = options.wrongSprint === undefined? 0: options.wrongSprint;
+    this.correctAudioChallenge = options.correctAudioChallenge === undefined? 0: options.correctAudioChallenge;
+    this.wrongAudioChallenge = options.wrongAudioChallenge === undefined? 0: options.wrongAudioChallenge;
   }
 
   public async render(): Promise<string> {
     const url = Utils.parseRequestURL();
     const currentGroup = Number(url.id) || (Number(url.id) === 0 ? 0 : 7);
+    const Sprintrate = Math.round((this.correctSprint/(this.correctSprint+this.wrongSprint))*100)||0;
+    const Audiorate = Math.round((this.correctAudioChallenge/(this.correctAudioChallenge+this.wrongAudioChallenge))*100)||0;
+    const popup = `
+    <div class="popup_wrapper" style="display:none">
+      <div class="close">X</div>
+      <p class="game-type">Sprint</p>
+      <div class="sprint-game-info">
+        <div class="game-result-box">
+        <p class="game-result">Correct: ${this.correctSprint}</p>
+        <p class="game-result">Wrong: ${this.wrongSprint}</p>
+        </div>
+        <div class="diagramm">
+          <svg viewBox="0 0 300 300" >
+            <circle class="track"  cx="150" cy="150" r="111.4" />
+            <circle id="Circ_points" transform="rotate(-90 150 150)"  cx="150" cy="150" r="111.4" stroke-dasharray="${7*Sprintrate}, ${7*(100-Sprintrate)}"/>
+            <text x="50%" y="165px" id="txt1"  text-anchor="middle" font-size="56px">${Sprintrate}%</text>
+          </svg>
+        </div>
+      </div>
+      <p class="game-type">Audio Challenge</p>
+      <div class="audio-challenge-game-info">
+      <div class="game-result-box">
+        <p class="game-result">Correct: ${this.correctAudioChallenge}</p>
+        <p class="game-result">Wrong: ${this.wrongAudioChallenge}</p>
+        </div>
+        <div class="diagramm">
+          <svg viewBox="0 0 300 300" >
+          <circle class="track"  cx="150" cy="150" r="111.4" />
+          <circle id="Circ_points" transform="rotate(-90 150 150)"  cx="150" cy="150" r="111.4" stroke-dasharray="${7*Audiorate}, ${7*(100-Audiorate)}"/>
+          <text x="50%" y="165px" id="txt1"  text-anchor="middle" font-size="56px">${Audiorate}%</text>
+          </svg>
+        </div>
+      </div>
+    </div>
+    `;
     const view = `
     <div class="word-card__card card-difficulty-${this.diff} group${currentGroup}" id="${this.id}">
       <div class="word-card__upper" style="background-image: url('${this.image}');">
@@ -86,8 +133,13 @@ class WordCard implements Component {
       </div>
       <div class="${currentGroup===6?"difficulty-buttons-hide":AuthorizationForm.isAuthorized?"difficulty-buttons-active":"difficulty-buttons-inactive"}">
         <div class="diff-button diff-hard" style="${this.diff===0? "pointer-events:none" : "pointer-events:''"}">${this.diff===2? "Убрать из сложного" : "Добавить в сложное"}</div>
+        <div class = "popup-section">
+          <div class="word-statistics-button">i</div>
+          ${popup}
+        </div>
         <div class="diff-button diff-learned" style="${this.diff===2? "pointer-events:none" : "pointer-events:''"}">${this.diff===0? "Убрать из изученного" : "Добавить в изученное"}</div> 
       </div>
+      
     </div>
     `;
     return view;
@@ -163,9 +215,18 @@ class WordCard implements Component {
     }
   }
 
+  private async showStatisticsPopup(this:HTMLElement): Promise<void> {
+    (this.nextElementSibling as HTMLElement).setAttribute('style', 'display: flex');
+  }
+  private async hideStatisticsPopup(this:HTMLElement): Promise<void> {
+    (this.parentElement as HTMLElement).setAttribute('style', 'display: none');
+  }
+
   public async after_render(): Promise<void> {
     document.querySelectorAll('.diff-hard').forEach((el) => el.addEventListener('click', this.changeWordDifficultyStatus));
     document.querySelectorAll('.diff-learned').forEach((el) => el.addEventListener('click', this.changeWordLearnedStatus));
+    document.querySelectorAll('.word-statistics-button').forEach((el)=> el.addEventListener('click', this.showStatisticsPopup));
+    document.querySelectorAll('.close').forEach((el)=> el.addEventListener('click', this.hideStatisticsPopup));
     return;
   }
 }
