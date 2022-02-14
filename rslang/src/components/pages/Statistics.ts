@@ -52,7 +52,7 @@ class Statistics implements Page {
           <td><div>${total.new}</div></td>
           <td><div>${totalAccuracy}</div></td>
           <td><div>${Math.max(Statistics.data[date].games.audioChallenge.row, Statistics.data[date].games.sprint.row)}</div></td>
-          <td><div >${Number(Statistics.data[date].texbookLearn) + Number(total.learn)}</div></td> 
+          <td><div >${Number(Statistics.data[date].textbookLearn) + Number(total.learn)}</div></td> 
         </tr>
       </tbody>
     </table>
@@ -79,7 +79,7 @@ class Statistics implements Page {
         row: 0,
       },
     },
-    texbookLearn: 0,
+    textbookLearn: 0,
   };
 
   static getDate() {
