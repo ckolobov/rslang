@@ -17,7 +17,7 @@ const Utils = {
     return request;
   },
 
-  getFullURL: (hash) => {
+  getFullURL: (hash:string) => {
     return url + hash;
   },
 };

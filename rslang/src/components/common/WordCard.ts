@@ -59,12 +59,10 @@ class WordCard implements Component {
   }
 
   public async render(): Promise<string> {
-    const groupX =
-      Number(window.location.hash.split('/')[2]) ||
-      (Number(window.location.hash.split('/')[2]) === 0 ? 0 : 7);
-      // console.log(this.id, this.diff);
+    const url = Utils.parseRequestURL();
+    const currentGroup = Number(url.id) || (Number(url.id) === 0 ? 0 : 7);
     const view = `
-    <div class="word-card__card card-difficulty-${this.diff} group${groupX}" id="${this.id}">
+    <div class="word-card__card card-difficulty-${this.diff} group${currentGroup}" id="${this.id}">
       <div class="word-card__upper" style="background-image: url('${this.image}');">
         <div class="word-card__word">
           <div class="word-card__main-word">${this.word}</div>
@@ -86,7 +84,7 @@ class WordCard implements Component {
         <div class="card-text meaning_russian">${this.textMeaningTranslate}</div>
         <div class="card-text example_russian">${this.textExampleTranslate}</div>
       </div>
-      <div class="${groupX===6?"difficulty-buttons-hide":AuthorizationForm.isAuthorized?"difficulty-buttons-active":"difficulty-buttons-inactive"}">
+      <div class="${currentGroup===6?"difficulty-buttons-hide":AuthorizationForm.isAuthorized?"difficulty-buttons-active":"difficulty-buttons-inactive"}">
         <div class="diff-button diff-hard" style="${this.diff===0? "pointer-events:none" : "pointer-events:''"}">${this.diff===2? "Убрать из сложного" : "Добавить в сложное"}</div>
         <div class="diff-button diff-learned" style="${this.diff===2? "pointer-events:none" : "pointer-events:''"}">${this.diff===0? "Убрать из изученного" : "Добавить в изученное"}</div> 
       </div>
@@ -98,13 +96,13 @@ class WordCard implements Component {
   private async changeWordDifficultyStatus(this:HTMLElement): Promise<void> {
     const parent = this.parentElement as HTMLElement;
     const card = parent.parentElement as HTMLElement;
-    let idX = '';
-    let tokenX = '';
+    let currentId = '';
+    let currentToken = '';
     const userInfo: string | null = localStorage.getItem('userInfo');
     if (userInfo) {
       AuthorizationForm.authorizationInfo = JSON.parse(userInfo);
-      idX = AuthorizationForm.authorizationInfo.userId;
-      tokenX = AuthorizationForm.authorizationInfo.token;
+      currentId = AuthorizationForm.authorizationInfo.userId;
+      currentToken = AuthorizationForm.authorizationInfo.token;
     }
     const total_diff = Number(localStorage.getItem('rslang-current-page-total-difficulty'));
     if (card.classList.contains(`${CardDifficultyStyle.NORMAL}`)) {
@@ -112,7 +110,7 @@ class WordCard implements Component {
       card.classList.remove(`${CardDifficultyStyle.NORMAL}`);
       card.classList.add(`${CardDifficultyStyle.HARD}`);
       (parent.children[1] as HTMLElement).setAttribute("style","pointer-events:none");
-      await Request.editWordInUserWordsList(idX, tokenX, card.id, Difficulty.HARD, 0);
+      await Request.editWordInUserWordsList(currentId, currentToken, card.id, Difficulty.HARD, 0);
       localStorage.setItem('rslang-current-page-total-difficulty', `${total_diff + 1}`);
       if(total_diff-1 !== 0) {
         (document.querySelectorAll('.game__button') as NodeListOf<HTMLElement>).forEach((el)=>el.setAttribute('style', 'pointer-events:""'));
@@ -122,7 +120,7 @@ class WordCard implements Component {
       card.classList.remove(`${CardDifficultyStyle.HARD}`);
       card.classList.add(`${CardDifficultyStyle.NORMAL}`);
       (parent.children[1] as HTMLElement).setAttribute("style","pointer-events:''");
-      await Request.editWordInUserWordsList(idX, tokenX, card.id, Difficulty.NORMAL, 0);
+      await Request.editWordInUserWordsList(currentId, currentToken, card.id, Difficulty.NORMAL, 0);
       localStorage.setItem('rslang-current-page-total-difficulty', `${total_diff - 1}`);
       if(total_diff-1 === 0) {
         (document.querySelectorAll('.game__button') as NodeListOf<HTMLElement>).forEach((el)=>el.setAttribute('style', 'pointer-events:none'));
@@ -133,13 +131,13 @@ class WordCard implements Component {
   private async changeWordLearnedStatus(this:HTMLElement): Promise<void> {
     const parent = this.parentElement as HTMLElement;
     const card = parent.parentElement as HTMLElement;
-    let idX = '';
-    let tokenX = '';
+    let currentId = '';
+    let currentToken = '';
     const userInfo: string | null = localStorage.getItem('userInfo');
     if (userInfo) {
       AuthorizationForm.authorizationInfo = JSON.parse(userInfo);
-      idX = AuthorizationForm.authorizationInfo.userId;
-      tokenX = AuthorizationForm.authorizationInfo.token;
+      currentId = AuthorizationForm.authorizationInfo.userId;
+      currentToken = AuthorizationForm.authorizationInfo.token;
     }
     const total_diff = Number(localStorage.getItem('rslang-current-page-total-difficulty'));
     if (card.classList.contains(`${CardDifficultyStyle.NORMAL}`)) {
@@ -147,7 +145,7 @@ class WordCard implements Component {
       card.classList.remove(`${CardDifficultyStyle.NORMAL}`);
       card.classList.add(`${CardDifficultyStyle.LEARNED}`);
       (parent.children[0] as HTMLElement).setAttribute("style","pointer-events:none");
-      await Request.editWordInUserWordsList(idX, tokenX, card.id, Difficulty.LEARNED, 0);
+      await Request.editWordInUserWordsList(currentId, currentToken, card.id, Difficulty.LEARNED, 0);
       localStorage.setItem('rslang-current-page-total-difficulty', `${total_diff - 1}`);
       if(total_diff-1 === 0) {
         (document.querySelectorAll('.game__button') as NodeListOf<HTMLElement>).forEach((el)=>el.setAttribute('style', 'pointer-events:none'));
@@ -157,7 +155,7 @@ class WordCard implements Component {
       card.classList.remove(`${CardDifficultyStyle.LEARNED}`);
       card.classList.add(`${CardDifficultyStyle.NORMAL}`);
       (parent.children[0] as HTMLElement).setAttribute("style","pointer-events:''");
-      await Request.editWordInUserWordsList(idX, tokenX, card.id, Difficulty.NORMAL, 0);
+      await Request.editWordInUserWordsList(currentId, currentToken, card.id, Difficulty.NORMAL, 0);
       localStorage.setItem('rslang-current-page-total-difficulty', `${total_diff + 1}`);
       if(total_diff-1 !== 0) {
         (document.querySelectorAll('.game__button') as NodeListOf<HTMLElement>).forEach((el)=>el.setAttribute('style', 'pointer-events:""'));
