@@ -8,16 +8,7 @@ import AuthorizationForm from '../common/AuthorizationForm';
 import Utils from '../../services/Utils';
 
 class Textbook implements Page {
-  private showActiveGroupButton(): void {
-    const buttons = document.querySelectorAll('.textbook__button');
-    const hash = window.location.hash.split('/');
-    const currentGroup = hash[2] === 'info' ? 7 : Number(hash[2]);
-    buttons.forEach((el) => el.classList.remove('button'));
-    buttons.forEach((el) => el.classList.add('button_grey'));
-    buttons[currentGroup].classList.remove('button_grey');
-    buttons[currentGroup].classList.add('button');
-  }
-
+  
   public async render(): Promise<string> {
     const url = Utils.parseRequestURL();
     const currentGroup = Number(url.id) || (Number(url.id) === 0 ? 0 : 7);
@@ -76,7 +67,6 @@ class Textbook implements Page {
           res[i].correctAudioChallenge = total_correct_audioChallenge;
           res[i].wrongAudioChallenge = total_wrong_audioChallenge;
         }
-        console.log(res[i]);
         result += await Drawer.drawComponent(WordCard, res[i]);
       }
     }
@@ -251,9 +241,8 @@ class Textbook implements Page {
     window.addEventListener('hashchange', () => {
       window.scrollTo({ top: 0, behavior: 'smooth' });
       if (window.location.hash.split('/')[1] === 'textbook') {
-        setTimeout(this.updateGroupPage, 100);
-        setTimeout(this.updatePageButtons, 100);
-        setTimeout(this.showActiveGroupButton, 100);
+        setTimeout(this.updateGroupPage, 500);
+        setTimeout(this.updatePageButtons, 2500);
       }
     });
     document.querySelectorAll('.word-card__audio').forEach((el) => el.addEventListener('click', this.playAudio));
