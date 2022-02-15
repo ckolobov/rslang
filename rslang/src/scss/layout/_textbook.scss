@@ -31,6 +31,7 @@
 }
 
 .word-card__card {
+  position: relative;
   width: 340px;
   height: 450px;
   margin: 20px 0;
@@ -124,7 +125,7 @@ hr {
   justify-content: space-around;
   width: 100%;
   color: black;
-  font: normal normal 15px/15px Arial;
+  font: normal normal 13px/14px Arial;
 }
 
 .difficulty-buttons-inactive{
@@ -136,7 +137,7 @@ hr {
   justify-content: space-around;
   width: 100%;
   color: rgb(70, 69, 69);
-  font: normal normal 15px/15px Arial;
+  font: normal normal 13px/14px Arial;
   pointer-events: none;
 }
 
@@ -144,6 +145,18 @@ hr {
   border: 2px solid black;
   border-radius: 25px;
   padding: 5px;
+  cursor: pointer;
+  &:hover {
+    background-color: $color-additional;
+  }
+}
+
+.word-statistics-button {
+  border-radius: 100%;
+  border: 2px solid black;
+  padding: 5px 7px;
+  text-align: center;
+  font: normal bold 14px/14px Arial;
   cursor: pointer;
   &:hover {
     background-color: $color-additional;
@@ -216,4 +229,61 @@ hr {
   width: 300px;
   height: 19px;
   text-align: center;
+}
+
+.popup_wrapper{
+  position: absolute;
+  width: 90%;
+  height: 80%;
+  top: 10%;
+  left: 5%;
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 25px;
+  border: 2px solid black;
+  display: flex;
+  flex-direction: column;
+  padding: 5px 20px;
+}
+
+.close {
+  color:black;
+  font-weight: bold;
+  text-align: end;
+  cursor: pointer;
+  &:hover {
+    color: red;
+  }
+}
+
+.sprint-game-info,
+.audio-challenge-game-info {
+  display: flex;
+  flex-direction: row;
+  font: normal normal 15px/15px Arial;
+  color: black;
+  align-items: center;
+}
+
+.game-type {
+  color: black;
+  font: normal bold 15px/15px Arial;
+}
+
+.diagramm {
+  margin-left: 100px;
+  width: 80px;
+  height: 80px;
+}
+
+.track{
+  fill:none;
+  stroke:#fabbab;
+  stroke-width:15; 
+}
+  
+#Circ_points {
+  fill:none;
+  stroke:#12d300;
+  stroke-width:15;
+  // stroke-dasharray:10, 490;  
 }

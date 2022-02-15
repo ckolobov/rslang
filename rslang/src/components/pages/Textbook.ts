@@ -8,16 +8,7 @@ import AuthorizationForm from '../common/AuthorizationForm';
 import Utils from '../../services/Utils';
 
 class Textbook implements Page {
-  private showActiveGroupButton(): void {
-    const buttons = document.querySelectorAll('.textbook__button');
-    const hash = window.location.hash.split('/');
-    const currentGroup = hash[2] === 'info' ? 7 : Number(hash[2]);
-    buttons.forEach((el) => el.classList.remove('button'));
-    buttons.forEach((el) => el.classList.add('button_grey'));
-    buttons[currentGroup].classList.remove('button_grey');
-    buttons[currentGroup].classList.add('button');
-  }
-
+  
   public async render(): Promise<string> {
     const url = Utils.parseRequestURL();
     const currentGroup = Number(url.id) || (Number(url.id) === 0 ? 0 : 7);
@@ -49,16 +40,32 @@ class Textbook implements Page {
       } else {
         if(AuthorizationForm.isAuthorized) {
           let wordDiff: number;
+          let total_correct_sprint: number;
+          let total_wrong_sprint: number;
+          let total_correct_audioChallenge: number;
+          let total_wrong_audioChallenge: number;
           try {
             const ans = await Request.getWordFromUserWordsList(currentId, currentToken, res[i].id);
             wordDiff = Number(ans.difficulty);
+            total_correct_sprint = Number(ans.optional.correctTotalSprint);
+            total_wrong_sprint = Number(ans.optional.wrongTotalSprint);
+            total_correct_audioChallenge = Number(ans.optional.correctTotalAudioChallenge);
+            total_wrong_audioChallenge = Number(ans.optional.wrongTotalAudioChallenge);
             total_diff += wordDiff;
           } catch {
             wordDiff = 1;
-            await Request.SetWordInUsersList(currentId, currentToken, res[i].id, Difficulty.NORMAL, 0);
+            total_correct_sprint = 0;
+            total_wrong_sprint = 0;
+            total_correct_audioChallenge = 0;
+            total_wrong_audioChallenge = 0;
+            await Request.SetWordInUsersList(currentId, currentToken, res[i].id, Difficulty.NORMAL, 0, 0, 0, 0, 0);
             total_diff += wordDiff;
           }
           res[i].diff = wordDiff;
+          res[i].correctSprint = total_correct_sprint;
+          res[i].wrongSprint = total_wrong_sprint;
+          res[i].correctAudioChallenge = total_correct_audioChallenge;
+          res[i].wrongAudioChallenge = total_wrong_audioChallenge;
         }
         result += await Drawer.drawComponent(WordCard, res[i]);
       }
@@ -234,9 +241,8 @@ class Textbook implements Page {
     window.addEventListener('hashchange', () => {
       window.scrollTo({ top: 0, behavior: 'smooth' });
       if (window.location.hash.split('/')[1] === 'textbook') {
-        setTimeout(this.updateGroupPage, 100);
-        setTimeout(this.updatePageButtons, 100);
-        setTimeout(this.showActiveGroupButton, 100);
+        setTimeout(this.updateGroupPage, 500);
+        setTimeout(this.updatePageButtons, 2500);
       }
     });
     document.querySelectorAll('.word-card__audio').forEach((el) => el.addEventListener('click', this.playAudio));
