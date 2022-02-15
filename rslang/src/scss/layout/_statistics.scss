@@ -1,0 +1,41 @@
+@import '../abstract/constants';
+
+.day-statistics-table {
+  font-size: 17px;
+  text-align: center;
+  color: $color-dark;
+}
+
+h1 {
+  text-align: center;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+th,
+td:first-child {
+  background: #afcde7;
+  color: $color-light;
+  div {
+    padding: 2rem 4rem;
+  }
+}
+
+th,
+td {
+  border-style: solid;
+  border-width: 0 1px 1px 0;
+  border-color: $color-light;
+}
+
+td {
+  background: #d8e6f3;
+}
+
+th:first-child,
+td:first-child {
+  text-align: left;
+}
+
+tr:nth-child(2n) td {
+  border-bottom-color: $color-dark;
+}

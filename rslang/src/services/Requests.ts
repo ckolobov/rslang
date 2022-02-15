@@ -265,13 +265,7 @@ export class Request {
   }
 
   //15. Обновить данные в статистике.
-  static async editStatistics(
-    id: string,
-    token: string,
-    learnedWords: number,
-    playedGames: number,
-    successRate: string
-  ) {
+  static async editStatistics(id: string, token: string, optional: object, learnedWords = 0) {
     const rawResponse = await fetch(`${url}/users/${id}/statistics`, {
       method: 'PUT',
       headers: {
@@ -281,10 +275,7 @@ export class Request {
       },
       body: JSON.stringify({
         learnedWords: `${learnedWords}`,
-        optional: {
-          playedGames: `${playedGames}`,
-          successRate: `${successRate}`,
-        },
+        optional: optional,
       }),
     });
     const content = await rawResponse.json();
