@@ -43,6 +43,8 @@ class Header implements Component {
             >
           </li>
           <li><a href="/#/game-sprint" class="link navigation__link" id="sprint">Sprint</a></li>
+          <li><a href="/#/hangman" class="link navigation__link" id="hangman">Hangman</a></li>
+          <li><a href="/#/pexeso" class="link navigation__link" id="pexeso">Pexeso</a></li>
           <li>
             <a href="/#/statistics" class="link navigation__link" id="statistics">Statistics</a>
           </li>

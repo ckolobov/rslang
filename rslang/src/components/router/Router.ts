@@ -6,6 +6,8 @@ import Home from '../pages/Home';
 import Textbook from '../pages/Textbook';
 import Statistics from '../pages/Statistics';
 import AudioChallenge from '../pages/AudioChallenge';
+import Hangman from '../pages/Hangman';
+import Pexeso from '../pages/Pexeso';
 import Sprint from '../pages/Sprint';
 import Header from '../Header';
 import Footer from '../Footer';
@@ -21,6 +23,8 @@ const routes: Record<string, new () => Page> = {
   '/textbook/:id/:verb': Textbook,
   '/statistics': Statistics,
   '/audio_challenge': AudioChallenge,
+  '/hangman': Hangman,
+  '/pexeso': Pexeso,
   '/game-sprint': Sprint,
 };
 

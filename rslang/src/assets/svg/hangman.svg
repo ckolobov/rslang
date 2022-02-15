@@ -1,0 +1,19 @@
+<svg width="680" height="350" xmlns="http://www.w3.org/2000/svg" style="border: 1px solid #fff; z-index: -1">
+    <g>
+        <title>Layer 1</title>
+        <line stroke-linecap="undefined" stroke-linejoin="undefined" id="svg_1" y2="313.5" x2="71.5" y1="41.5" x1="73.5" stroke-width="1.5" stroke="#fff" fill="none"/> <!-- вертикальная доска -->
+        <line stroke-linecap="undefined" stroke-linejoin="undefined" id="svg_2" y2="43.5" x2="201.5" y1="42.5" x1="73.5" stroke-width="1.5" stroke="#fff" fill="none"/> <!-- диагональная доска -->
+        <line stroke-linecap="undefined" stroke-linejoin="undefined" id="svg_3" y2="76.5" x2="73.5" y1="42.5" x1="105.5" stroke-width="1.5" stroke="#fff" fill="none"/> <!-- горизонтальная доска -->
+        <line stroke-linecap="undefined" stroke-linejoin="undefined" id="svg_4" y2="88.5" x2="175.5" y1="43.5" x1="175.5" stroke-width="1.5" stroke="#fff" fill="none"/> <!-- веревка -->
+        <ellipse ry="23.5" rx="24.5" id="svg_5" cy="110" cx="177" stroke-width="1.5" stroke="#fff" fill="none" display="none"/> <!-- голова -->
+        <ellipse ry="4.5" rx="5" id="svg_6" cy="104" cx="164.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" stroke="#fff" fill="none" display="none"/> <!-- левый глаз -->
+        <ellipse ry="4.5" rx="5" id="svg_9" cy="104" cx="185.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" stroke="#fff" fill="none" display="none"/> <!-- правый глаз --> 
+        <line stroke-linecap="null" stroke-linejoin="null" id="svg_10" y2="117.5" x2="184.5" y1="117.5" x1="167.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" stroke="#fff" fill="none" display="none"/> <!-- рот -->
+        <ellipse ry="53.5" rx="30" id="svg_11" cy="186" cx="177.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" stroke="#fff" fill="none" display="none"/> <!-- туловище --> 
+        <line stroke-linecap="null" stroke-linejoin="null" id="svg_12" y2="192.5" x2="129.5" y1="153.5" x1="153.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" stroke="#fff" fill="none" display="none"/> <!-- левая рука --> 
+        <line stroke-linecap="null" stroke-linejoin="null" id="svg_14" y2="185.5" x2="226.5" y1="150.5" x1="200.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" stroke="#fff" fill="none" display="none"/> <!-- правая рука --> 
+        <line stroke-linecap="null" stroke-linejoin="null" id="svg_15" y2="282.5" x2="140.5" y1="237.5" x1="171.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" stroke="#fff" fill="none" display="none"/> <!-- леввая нога --> 
+        <line stroke-linecap="null" stroke-linejoin="null" id="svg_16" y2="281.5" x2="207.5" y1="239.5" x1="185.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" stroke="#fff" fill="none" display="none"/> <!-- правая нога --> 
+        <line stroke-linecap="null" stroke-linejoin="null" id="svg_17" y2="313.5" x2="265.5" y1="312.5" x1="35.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" stroke="#fff" fill="none"/> <!-- нижняя доска -->
+    </g>
+</svg>
