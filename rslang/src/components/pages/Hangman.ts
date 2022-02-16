@@ -104,20 +104,24 @@ class Hangman implements Page {
     document.querySelectorAll('.letter').forEach((el) => el.setAttribute('style', 'background-color:""'));
     (document.querySelector('.hangman-start') as HTMLElement).setAttribute('style', 'display: none');
     (document.querySelector('.keyboard') as HTMLElement).setAttribute('style', 'display: flex');
-    ((document.querySelector('.hangman') as HTMLElement).querySelector('#svg_5') as HTMLElement).setAttribute('display', 'none');
-    ((document.querySelector('.hangman') as HTMLElement).querySelector('#svg_6') as HTMLElement).setAttribute('display', 'none');
-    ((document.querySelector('.hangman') as HTMLElement).querySelector('#svg_9') as HTMLElement).setAttribute('display', 'none');
-    ((document.querySelector('.hangman') as HTMLElement).querySelector('#svg_10') as HTMLElement).setAttribute('display', 'none');
-    ((document.querySelector('.hangman') as HTMLElement).querySelector('#svg_11') as HTMLElement).setAttribute('display', 'none');
-    ((document.querySelector('.hangman') as HTMLElement).querySelector('#svg_12') as HTMLElement).setAttribute('display', 'none');
-    ((document.querySelector('.hangman') as HTMLElement).querySelector('#svg_14') as HTMLElement).setAttribute('display', 'none');
-    ((document.querySelector('.hangman') as HTMLElement).querySelector('#svg_15') as HTMLElement).setAttribute('display', 'none');
-    ((document.querySelector('.hangman') as HTMLElement).querySelector('#svg_16') as HTMLElement).setAttribute('display', 'none');
+    const hangman = (document.querySelector('.hangman') as HTMLElement); 
+    (hangman.querySelector('#svg_5') as HTMLElement).setAttribute('display', 'none');
+    (hangman.querySelector('#svg_6') as HTMLElement).setAttribute('display', 'none');
+    (hangman.querySelector('#svg_9') as HTMLElement).setAttribute('display', 'none');
+    (hangman.querySelector('#svg_10') as HTMLElement).setAttribute('display', 'none');
+    (hangman.querySelector('#svg_11') as HTMLElement).setAttribute('display', 'none');
+    (hangman.querySelector('#svg_12') as HTMLElement).setAttribute('display', 'none');
+    (hangman.querySelector('#svg_14') as HTMLElement).setAttribute('display', 'none');
+    (hangman.querySelector('#svg_15') as HTMLElement).setAttribute('display', 'none');
+    (hangman.querySelector('#svg_16') as HTMLElement).setAttribute('display', 'none');
 
     const level = Number((document.getElementById('hangman-level') as HTMLSelectElement).value);
-    const group = level === -1 ? Math.round(Math.random()*5): level;
-    const page = Math.round(Math.random()*29);
-    const word = Math.round(Math.random()*19);
+    const groupsPerDictionary = 6;
+    const pagesPerGroup = 30;
+    const cardsPerPage = 20;
+    const group = level === -1 ? Math.round(Math.random()*(groupsPerDictionary-1)): level;
+    const page = Math.round(Math.random()*(pagesPerGroup - 1));
+    const word = Math.round(Math.random()*(cardsPerPage-1));
     const wordList: Card[] = await Request.getWordsList({group: group, page: page});
     this.currentWord = wordList[word].word.toUpperCase();
     this.currentWordId = wordList[word].id;
@@ -127,6 +131,7 @@ class Hangman implements Page {
 
   public guessLetter(el:HTMLElement): void {
     const letter = el.id;
+    const hangman = (document.querySelector('.hangman') as HTMLElement); 
     this.currentLetters += letter; 
     const newWord = this.currentWord.replace(new RegExp(`[^${this.currentLetters}]`,'g'), '_ ').trimEnd();
     (document.querySelector('.hangman-word') as HTMLParagraphElement).innerText = newWord;
@@ -137,25 +142,25 @@ class Hangman implements Page {
       this.currentErrors += 1;
     }
     if (this.currentErrors === 1) {
-      ((document.querySelector('.hangman') as HTMLElement).querySelector('#svg_5') as HTMLElement).removeAttribute('display');
-      ((document.querySelector('.hangman') as HTMLElement).querySelector('#svg_6') as HTMLElement).removeAttribute('display');
-      ((document.querySelector('.hangman') as HTMLElement).querySelector('#svg_9') as HTMLElement).removeAttribute('display');
-      ((document.querySelector('.hangman') as HTMLElement).querySelector('#svg_10') as HTMLElement).removeAttribute('display');
+      (hangman.querySelector('#svg_5') as HTMLElement).removeAttribute('display');
+      (hangman.querySelector('#svg_6') as HTMLElement).removeAttribute('display');
+      (hangman.querySelector('#svg_9') as HTMLElement).removeAttribute('display');
+      (hangman.querySelector('#svg_10') as HTMLElement).removeAttribute('display');
     }
     if (this.currentErrors === 2) {
-      ((document.querySelector('.hangman') as HTMLElement).querySelector('#svg_11') as HTMLElement).removeAttribute('display');
+      (hangman.querySelector('#svg_11') as HTMLElement).removeAttribute('display');
     }
     if (this.currentErrors === 3) {
-      ((document.querySelector('.hangman') as HTMLElement).querySelector('#svg_12') as HTMLElement).removeAttribute('display');
+      (hangman.querySelector('#svg_12') as HTMLElement).removeAttribute('display');
     }
     if (this.currentErrors === 4) {
-      ((document.querySelector('.hangman') as HTMLElement).querySelector('#svg_14') as HTMLElement).removeAttribute('display');
+      (hangman.querySelector('#svg_14') as HTMLElement).removeAttribute('display');
     }
     if (this.currentErrors === 5) {
-      ((document.querySelector('.hangman') as HTMLElement).querySelector('#svg_15') as HTMLElement).removeAttribute('display');
+      (hangman.querySelector('#svg_15') as HTMLElement).removeAttribute('display');
     }
     if (this.currentErrors === 6) {
-      ((document.querySelector('.hangman') as HTMLElement).querySelector('#svg_16') as HTMLElement).removeAttribute('display');
+      (hangman.querySelector('#svg_16') as HTMLElement).removeAttribute('display');
       (document.getElementById('hangman-result') as HTMLParagraphElement).innerText = `You Lose! \nWord was ${this.currentWord}`;
       (document.getElementById('hangman-new') as HTMLElement).setAttribute('style', 'display: block');
       (document.getElementById('discover-word') as HTMLElement).setAttribute('style', 'display: block');
