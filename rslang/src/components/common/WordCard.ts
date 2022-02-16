@@ -161,7 +161,7 @@ class WordCard implements Component {
       this.innerHTML = 'Убрать из сложного';
       card.classList.remove(`${CardDifficultyStyle.NORMAL}`);
       card.classList.add(`${CardDifficultyStyle.HARD}`);
-      (parent.children[1] as HTMLElement).setAttribute("style","pointer-events:none");
+      (parent.children[2] as HTMLElement).setAttribute("style","pointer-events:none");
       await Request.editWordInUserWordsList(currentId, currentToken, card.id, Difficulty.HARD, 0);
       localStorage.setItem('rslang-current-page-total-difficulty', `${total_diff + 1}`);
       if(total_diff-1 !== 0) {
@@ -171,7 +171,7 @@ class WordCard implements Component {
       this.innerHTML = 'Добавить в сложное';
       card.classList.remove(`${CardDifficultyStyle.HARD}`);
       card.classList.add(`${CardDifficultyStyle.NORMAL}`);
-      (parent.children[1] as HTMLElement).setAttribute("style","pointer-events:''");
+      (parent.children[2] as HTMLElement).setAttribute("style","pointer-events:''");
       await Request.editWordInUserWordsList(currentId, currentToken, card.id, Difficulty.NORMAL, 0);
       localStorage.setItem('rslang-current-page-total-difficulty', `${total_diff - 1}`);
       if(total_diff-1 === 0) {
@@ -183,6 +183,9 @@ class WordCard implements Component {
   private async changeWordLearnedStatus(this:HTMLElement): Promise<void> {
     const parent = this.parentElement as HTMLElement;
     const card = parent.parentElement as HTMLElement;
+    const dateToday = new Date();
+    const date = `${dateToday.getDate().toString().padStart(2, '0')}-${dateToday.getMonth().toString().padStart(2, '0')}-${dateToday.getFullYear()}`;
+    const resultOptions = {};
     let currentId = '';
     let currentToken = '';
     const userInfo: string | null = localStorage.getItem('userInfo');
@@ -198,6 +201,11 @@ class WordCard implements Component {
       card.classList.add(`${CardDifficultyStyle.LEARNED}`);
       (parent.children[0] as HTMLElement).setAttribute("style","pointer-events:none");
       await Request.editWordInUserWordsList(currentId, currentToken, card.id, Difficulty.LEARNED, 0);
+      const x = await Request.getStatistics(currentId, currentToken);
+      const options = x.optional[date];
+      options.textbookLearn +=1;
+      resultOptions[`${date}`] = options;
+      await Request.editStatistics(currentId, currentToken, resultOptions, x.learnedWords+1);
       localStorage.setItem('rslang-current-page-total-difficulty', `${total_diff - 1}`);
       if(total_diff-1 === 0) {
         (document.querySelectorAll('.game__button') as NodeListOf<HTMLElement>).forEach((el)=>el.setAttribute('style', 'pointer-events:none'));
@@ -208,6 +216,11 @@ class WordCard implements Component {
       card.classList.add(`${CardDifficultyStyle.NORMAL}`);
       (parent.children[0] as HTMLElement).setAttribute("style","pointer-events:''");
       await Request.editWordInUserWordsList(currentId, currentToken, card.id, Difficulty.NORMAL, 0);
+      const x = await Request.getStatistics(currentId, currentToken);
+      const options = x.optional[date];
+      options.textbookLearn -=1;
+      resultOptions[`${date}`] = options;
+      await Request.editStatistics(currentId, currentToken, resultOptions, x.learnedWords-1);
       localStorage.setItem('rslang-current-page-total-difficulty', `${total_diff + 1}`);
       if(total_diff-1 !== 0) {
         (document.querySelectorAll('.game__button') as NodeListOf<HTMLElement>).forEach((el)=>el.setAttribute('style', 'pointer-events:""'));

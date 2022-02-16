@@ -28,9 +28,7 @@ class Home implements Page {
             class="team-member__img"
         /></a>
         <p class="team-member__text">
-          Text Text Text Text Text Text Text Text Text Text Text Text Text
-          Text Text Text Text Text Text Text Text Text Text Text Text Text
-          Text Text Text Text Text
+        Тимлид, разработал архитектуру приложения, организовал автообновление токенов, создал игру "Спринт".
         </p>
       </div>
       <div class="team-member__card">
@@ -41,9 +39,7 @@ class Home implements Page {
             class="team-member__img"
         /></a>
         <p class="team-member__text">
-          Text Text Text Text Text Text Text Text Text Text Text Text Text
-          Text Text Text Text Text Text Text Text Text Text Text Text Text
-          Text Text Text Text Text
+        Реализовал раздел "Учебник", реализовал карточки слов со статистикой, создал игры "Виселица" и "Пексесо".
         </p>
       </div>
       <div class="team-member__card">
@@ -54,9 +50,7 @@ class Home implements Page {
             class="team-member__img"
         /></a>
         <p class="team-member__text">
-          Text Text Text Text Text Text Text Text Text Text Text Text Text
-          Text Text Text Text Text Text Text Text Text Text Text Text Text
-          Text Text Text Text Text
+        Разработала дизайн приложения, создала механизм авторизации, игру "Аудиовызов", главную страницу и раздел "Статистика".
         </p>
       </div>
     </div>
