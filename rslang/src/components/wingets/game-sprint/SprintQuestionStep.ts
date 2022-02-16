@@ -10,8 +10,14 @@ interface SprintQuestionStepOptions {
   onConfirm(result: Results): void;
 }
 
+const keyCodeMapping = {
+  'ArrowLeft': false,
+  'ArrowRight': true
+}
+
 class SprintQuestionStep implements Component {
   private options: SprintQuestionStepOptions;
+  private keyPressHandler = this.onKeyDown.bind(this);
 
   constructor(options: SprintQuestionStepOptions) {
     this.options = options;
@@ -20,13 +26,13 @@ class SprintQuestionStep implements Component {
   public async render(): Promise<string> {
     const answerFalseButtonHTML = await Drawer.drawComponent(Button, {
       class: 'sprint-question-button sprint-question-button--wrong',
-      text: `Wrong`,
+      text: `← Wrong`,
       additionalAttributes: 'data-result="0"',
     });
 
     const answerTrueButtonHTML = await Drawer.drawComponent(Button, {
       class: 'sprint-question-button sprint-question-button--correct',
-      text: `Correct`,
+      text: `Correct →`,
       additionalAttributes: 'data-result="1"',
     });
 
@@ -47,15 +53,31 @@ class SprintQuestionStep implements Component {
     const buttonsBlock: HTMLElement = document.getElementById(
       'sprint-question-buttons'
     ) as HTMLElement;
-    buttonsBlock.addEventListener('click', this.onButtonClick.bind(this));
+    buttonsBlock.addEventListener('click', (event) => this.onButtonClick(event));
+    document.addEventListener('keydown', this.keyPressHandler);
   }
 
-  private onButtonClick(event: Event) {
+  private onButtonClick(event: MouseEvent): void {
     const button = (event.target as HTMLElement).closest('button');
     if (!button) return;
     const answer = button.dataset.result;
     if (!answer) throw new Error('Answer is unknown!');
     const result = this.options.scenario === Number(answer);
+    this.onConfirm(result);
+  }
+
+  private onKeyDown(event: KeyboardEvent): void {
+    const keyCode = event.code;
+    if (keyCode in keyCodeMapping) {
+      event.preventDefault();
+      event.stopPropagation();
+      const result = this.options.scenario === Number(keyCodeMapping[keyCode]);
+      this.onConfirm(result);
+    }
+  }
+
+  private onConfirm(result: boolean) {
+    document.removeEventListener('keydown', this.keyPressHandler);
     this.options.onConfirm(Number(result));
   }
 }
