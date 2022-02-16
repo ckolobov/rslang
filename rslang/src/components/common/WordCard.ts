@@ -2,6 +2,7 @@ import Component from './Component';
 import Utils from '../../services/Utils';
 import AuthorizationForm from './AuthorizationForm';
 import Request, { Difficulty } from '../../services/Requests';
+import Statistics from '../pages/Statistics';
 
 export interface Card {
   _id: string;
@@ -185,7 +186,7 @@ class WordCard implements Component {
     const card = parent.parentElement as HTMLElement;
     const dateToday = new Date();
     const date = `${dateToday.getDate().toString().padStart(2, '0')}-${dateToday.getMonth().toString().padStart(2, '0')}-${dateToday.getFullYear()}`;
-    const resultOptions = {};
+    let resultOptions = {};
     let currentId = '';
     let currentToken = '';
     const userInfo: string | null = localStorage.getItem('userInfo');
@@ -202,7 +203,8 @@ class WordCard implements Component {
       (parent.children[0] as HTMLElement).setAttribute("style","pointer-events:none");
       await Request.editWordInUserWordsList(currentId, currentToken, card.id, Difficulty.LEARNED, 0);
       const x = await Request.getStatistics(currentId, currentToken);
-      const options = x.optional[date];
+      const options = x.optional[date] ? x.optional[date] : Statistics.statisticsTemplate;
+      resultOptions = x.optional; 
       options.textbookLearn +=1;
       resultOptions[`${date}`] = options;
       await Request.editStatistics(currentId, currentToken, resultOptions, x.learnedWords+1);
@@ -217,7 +219,8 @@ class WordCard implements Component {
       (parent.children[0] as HTMLElement).setAttribute("style","pointer-events:''");
       await Request.editWordInUserWordsList(currentId, currentToken, card.id, Difficulty.NORMAL, 0);
       const x = await Request.getStatistics(currentId, currentToken);
-      const options = x.optional[date];
+      const options = x.optional[date] ? x.optional[date] : Statistics.statisticsTemplate;
+      resultOptions = x.optional; 
       options.textbookLearn -=1;
       resultOptions[`${date}`] = options;
       await Request.editStatistics(currentId, currentToken, resultOptions, x.learnedWords-1);

@@ -2,6 +2,7 @@ import Component from './Component';
 import Drawer from '../drawer/Drawer';
 import Button from './Button';
 import Request from '../../services/Requests';
+import Statistics from '../pages/Statistics';
 import '../../scss/components/_authorization-form.scss';
 
 type authorizationType = {
@@ -134,6 +135,25 @@ class AuthorizationForm implements Component {
         this.showErrorMessage('email-error', `account with this email doesn't exist.`);
       }
     }
+    const userInfo: string | null = localStorage.getItem('userInfo');
+    let currentId ='', currentToken = '';
+    if (userInfo) {
+      AuthorizationForm.authorizationInfo = JSON.parse(userInfo);
+      currentId = AuthorizationForm.authorizationInfo.userId;
+      currentToken = AuthorizationForm.authorizationInfo.token;
+    }
+    const dateToday = new Date();
+    const date = `${dateToday.getDate().toString().padStart(2, '0')}-${dateToday.getMonth().toString().padStart(2, '0')}-${dateToday.getFullYear()}`;
+    try{
+      await Request.getStatistics(currentId, currentToken);
+    } catch {
+      const options = Statistics.statisticsTemplate;
+      const resultOptions = {} ;
+      const learnedWords = 0;
+      resultOptions[`${date}`] = options;
+      await Request.editStatistics(currentId, currentToken, resultOptions, learnedWords);
+    }
+    
   }
 
   public async after_render(): Promise<void> {
