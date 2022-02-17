@@ -17,7 +17,7 @@ const Utils = {
     return request;
   },
 
-  randomizeArray: (arr: []) => {
+  randomizeArray: (arr: any[]) => {
     const result = [...arr];
     let currentIndex = result.length;
     let randomIndex: number;
