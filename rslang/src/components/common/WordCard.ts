@@ -67,7 +67,6 @@ class WordCard implements Component {
     this.diff = options.diff === undefined? 1: options.diff;
     this.correctSprint = options.correctSprint === undefined? 0: options.correctSprint;
     this.wrongSprint = options.wrongSprint === undefined? 0: options.wrongSprint;
-    console.log(options.correctAudioChallenge);
     this.correctAudioChallenge = options.correctAudioChallenge === undefined? 0: options.correctAudioChallenge;
     this.wrongAudioChallenge = options.wrongAudioChallenge === undefined? 0: options.wrongAudioChallenge;
     this.authorization = Authorization.getInstance();

@@ -53,7 +53,6 @@ class Request {
       },
       body: JSON.stringify(user),
     });
-    console.log(rawResponse);
     if (rawResponse.ok) {
       const content = await rawResponse.json();
       return {

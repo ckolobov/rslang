@@ -23,7 +23,6 @@ class Authorization {
       authorizationInfo.refreshToken = userInfoUpdated.refreshToken;
       this.updateUserInfo(authorizationInfo);
     } catch (e) {
-      console.warn('User token update failed');
       this.logoutUser();
     }
   }

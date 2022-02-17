@@ -97,7 +97,6 @@ class AuthorizationForm implements Component {
   private async createUser(email: string, password: string): Promise<void> {
     const createResult = await Request.createUser({ name: DEFAULT_USER_NAME, email, password });
     if (createResult.error) {
-      console.log(createResult);
       if (createResult.error.errors) {
         createResult.error.errors.forEach((err) => {
           const fieldId = err.path[0] === 'email' ? ErrorFields.EMAIL : ErrorFields.PASSWORD;
