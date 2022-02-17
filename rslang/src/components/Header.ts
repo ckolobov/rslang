@@ -6,10 +6,10 @@ import AuthorizationForm from './common/AuthorizationForm';
 import '../scss/layout/_header.scss';
 
 class Header implements Component {
-  private authrization: Authorization;
+  private authorization: Authorization;
 
   public constructor() {
-    this.authrization = Authorization.getInstance();
+    this.authorization = Authorization.getInstance();
   }
 
   public async render(): Promise<string> {
@@ -21,7 +21,7 @@ class Header implements Component {
     const authorizationButton = await Drawer.drawComponent(Button, {
       id: 'authorization-button',
       class: 'header__button',
-      text: `${this.authrization.isAuthorized() ? 'Log out' : 'Log in'}`,
+      text: `${this.authorization.isAuthorized() ? 'Log out' : 'Log in'}`,
     });
 
     const page = localStorage.getItem('rslang_current_page') || 0;
@@ -74,8 +74,8 @@ class Header implements Component {
     const form = document.getElementById('authorization-form') as HTMLElement;
 
     button.addEventListener('click', () => {
-      if (this.authrization.isAuthorized()) {
-        this.authrization.logoutUser();
+      if (this.authorization.isAuthorized()) {
+        this.authorization.logoutUser();
       } else {
         form.classList.add('active');
       }
