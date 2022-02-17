@@ -7,8 +7,8 @@ export interface Card {
   _id: string;
   id: string;
   word: string;
-  wordTranslate: string
-  transcription: string
+  wordTranslate: string;
+  transcription: string;
   audio: string;
   image: string;
   textMeaning: string;
@@ -72,6 +72,7 @@ class WordCard implements Component {
 
   public async render(): Promise<string> {
     const url = Utils.parseRequestURL();
+    const currentMenuItem = url.resource;
     const currentGroup = Number(url.id) || (Number(url.id) === 0 ? 0 : 7);
     const Sprintrate = Math.round((this.correctSprint/(this.correctSprint+this.wrongSprint))*100)||0;
     const Audiorate = Math.round((this.correctAudioChallenge/(this.correctAudioChallenge+this.wrongAudioChallenge))*100)||0;
@@ -109,7 +110,7 @@ class WordCard implements Component {
     </div>
     `;
     const view = `
-    <div class="word-card__card card-difficulty-${this.diff} group${currentGroup}" id="${this.id}">
+    <div class="word-card__card card-difficulty-${currentMenuItem==='textbook' ? this.diff : 1} group${currentMenuItem==='textbook' ? currentGroup : 6}" id="${this.id}">
       <div class="word-card__upper" style="background-image: url('${this.image}');">
         <div class="word-card__word">
           <div class="word-card__main-word">${this.word}</div>
@@ -131,7 +132,7 @@ class WordCard implements Component {
         <div class="card-text meaning_russian">${this.textMeaningTranslate}</div>
         <div class="card-text example_russian">${this.textExampleTranslate}</div>
       </div>
-      <div class="${currentGroup===6?"difficulty-buttons-hide":AuthorizationForm.isAuthorized?"difficulty-buttons-active":"difficulty-buttons-inactive"}">
+      <div class="${(currentMenuItem!=='textbook'||currentGroup===6)?"difficulty-buttons-hide":AuthorizationForm.isAuthorized?"difficulty-buttons-active":"difficulty-buttons-inactive"}">
         <div class="diff-button diff-hard" style="${this.diff===0? "pointer-events:none" : "pointer-events:''"}">${this.diff===2? "Убрать из сложного" : "Добавить в сложное"}</div>
         <div class = "popup-section">
           <div class="word-statistics-button">i</div>
