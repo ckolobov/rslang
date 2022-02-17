@@ -1,4 +1,7 @@
-import Utils from './Utils';
+import Utils from '../Utils';
+import Authorization from '../Authorization';
+import { createUserReturn, loginUserReturn } from './RequestReturnTypes';
+import { createUserErrorCodes } from './RequestErrorCodes';
 
 const url = Utils.getFullURL('');
 
@@ -7,7 +10,8 @@ export enum Difficulty {
   NORMAL,   // Не добавлено в изученное/сложное
   HARD,     // добавлено в сложное
 }
-export class Request {
+
+class Request {
   // 1. Получить слова определенной группы, определенной страницы
   static async getWordsList(options: { group?: number; page?: number }) {
     const rawResponse = await fetch(
@@ -40,7 +44,7 @@ export class Request {
     name: string;
     email: string;
     password: string;
-  }) {
+  }): Promise<createUserReturn> {
     const rawResponse = await fetch(`${url}/users`, {
       method: 'POST',
       headers: {
@@ -49,8 +53,29 @@ export class Request {
       },
       body: JSON.stringify(user),
     });
-    const content = await rawResponse.json();
-    return content;
+    console.log(rawResponse);
+    if (rawResponse.ok) {
+      const content = await rawResponse.json();
+      return {
+        data: content
+      }
+    }
+    if (rawResponse.status === createUserErrorCodes.WRONG_INPUT) {
+      const errorDetails = await rawResponse.json();
+      return {
+        error: {
+          code: rawResponse.status,
+          message: rawResponse.statusText,
+          errors: errorDetails.error.errors,
+        }
+      }
+    }
+    return {
+      error: {
+        code: rawResponse.status,
+        message: rawResponse.statusText,
+      }
+    }
   }
 
   // 4. Получить информацию о пользователе
@@ -62,6 +87,21 @@ export class Request {
         Authorization: `Bearer ${token}`,
       },
     });
+    if (!rawResponse.ok) {
+      if (rawResponse.status === 401) {
+        const authorization = Authorization.getInstance();
+        await authorization.updateToken();
+        const userInfo = authorization.getUserInfo();
+        return Request.getUserInfo(userInfo.id, userInfo.token);
+      } else {
+        return {
+          error: {
+            code: rawResponse.status,
+            message: rawResponse.statusText,
+          }
+        }
+      }
+    }
     const content = await rawResponse.json();
     return content;
   }
@@ -85,6 +125,21 @@ export class Request {
         password: `${password}`,
       }),
     });
+    if (!rawResponse.ok) {
+      if (rawResponse.status === 401) {
+        const authorization = Authorization.getInstance();
+        await authorization.updateToken();
+        const userInfo = authorization.getUserInfo();
+        return Request.getUserInfo(userInfo.id, userInfo.token);
+      } else {
+        return {
+          error: {
+            code: rawResponse.status,
+            message: rawResponse.statusText,
+          }
+        }
+      }
+    }
     const content = await rawResponse.json();
     return content;
   }
@@ -121,6 +176,21 @@ export class Request {
         Authorization: `Bearer ${token}`,
       },
     });
+    if (!rawResponse.ok) {
+      if (rawResponse.status === 401) {
+        const authorization = Authorization.getInstance();
+        await authorization.updateToken();
+        const userInfo = authorization.getUserInfo();
+        return Request.getUserInfo(userInfo.id, userInfo.token);
+      } else {
+        return {
+          error: {
+            code: rawResponse.status,
+            message: rawResponse.statusText,
+          }
+        }
+      }
+    }
     const content = await rawResponse.json();
     return content;
   }
@@ -155,6 +225,21 @@ export class Request {
         }
       }),
     });
+    if (!rawResponse.ok) {
+      if (rawResponse.status === 401) {
+        const authorization = Authorization.getInstance();
+        await authorization.updateToken();
+        const userInfo = authorization.getUserInfo();
+        return Request.getUserInfo(userInfo.id, userInfo.token);
+      } else {
+        return {
+          error: {
+            code: rawResponse.status,
+            message: rawResponse.statusText,
+          }
+        }
+      }
+    }
     const content = await rawResponse.json();
     return content;
   }
@@ -172,6 +257,21 @@ export class Request {
         Authorization: `Bearer ${token}`,
       },
     });
+    if (!rawResponse.ok) {
+      if (rawResponse.status === 401) {
+        const authorization = Authorization.getInstance();
+        await authorization.updateToken();
+        const userInfo = authorization.getUserInfo();
+        return Request.getUserInfo(userInfo.id, userInfo.token);
+      } else {
+        return {
+          error: {
+            code: rawResponse.status,
+            message: rawResponse.statusText,
+          }
+        }
+      }
+    }
     const content = await rawResponse.json();
     return content;
   }
@@ -198,6 +298,21 @@ export class Request {
         },
       }),
     });
+    if (!rawResponse.ok) {
+      if (rawResponse.status === 401) {
+        const authorization = Authorization.getInstance();
+        await authorization.updateToken();
+        const userInfo = authorization.getUserInfo();
+        return Request.getUserInfo(userInfo.id, userInfo.token);
+      } else {
+        return {
+          error: {
+            code: rawResponse.status,
+            message: rawResponse.statusText,
+          }
+        }
+      }
+    }
     const content = await rawResponse.json();
     return content;
   }
@@ -244,6 +359,21 @@ export class Request {
         },
       }
     );
+    if (!rawResponse.ok) {
+      if (rawResponse.status === 401) {
+        const authorization = Authorization.getInstance();
+        await authorization.updateToken();
+        const userInfo = authorization.getUserInfo();
+        return Request.getUserInfo(userInfo.id, userInfo.token);
+      } else {
+        return {
+          error: {
+            code: rawResponse.status,
+            message: rawResponse.statusText,
+          }
+        }
+      }
+    }
     const content = await rawResponse.json();
     return content;
   }
@@ -260,6 +390,21 @@ export class Request {
         },
       }
     );
+    if (!rawResponse.ok) {
+      if (rawResponse.status === 401) {
+        const authorization = Authorization.getInstance();
+        await authorization.updateToken();
+        const userInfo = authorization.getUserInfo();
+        return Request.getUserInfo(userInfo.id, userInfo.token);
+      } else {
+        return {
+          error: {
+            code: rawResponse.status,
+            message: rawResponse.statusText,
+          }
+        }
+      }
+    }
     const content = await rawResponse.json();
     return content;
   }
@@ -278,6 +423,21 @@ export class Request {
         optional: optional,
       }),
     });
+    if (!rawResponse.ok) {
+      if (rawResponse.status === 401) {
+        const authorization = Authorization.getInstance();
+        await authorization.updateToken();
+        const userInfo = authorization.getUserInfo();
+        return Request.getUserInfo(userInfo.id, userInfo.token);
+      } else {
+        return {
+          error: {
+            code: rawResponse.status,
+            message: rawResponse.statusText,
+          }
+        }
+      }
+    }
     const content = await rawResponse.json();
     return content;
   }
@@ -291,12 +451,27 @@ export class Request {
         Authorization: `Bearer ${token}`,
       },
     });
+    if (!rawResponse.ok) {
+      if (rawResponse.status === 401) {
+        const authorization = Authorization.getInstance();
+        await authorization.updateToken();
+        const userInfo = authorization.getUserInfo();
+        return Request.getUserInfo(userInfo.id, userInfo.token);
+      } else {
+        return {
+          error: {
+            code: rawResponse.status,
+            message: rawResponse.statusText,
+          }
+        }
+      }
+    }
     const content = await rawResponse.json();
     return content;
   }
 
   //17. Log in
-  static async loginUser(user: { email: string; password: string }) {
+  static async loginUser(user: { email: string; password: string }): Promise<loginUserReturn> {
     const rawResponse = await fetch(`${url}/signin`, {
       method: 'POST',
       headers: {
@@ -305,8 +480,19 @@ export class Request {
       },
       body: JSON.stringify(user),
     });
+    if (!rawResponse.ok) {
+      return {
+        error: {
+          code: rawResponse.status,
+          message: rawResponse.statusText
+        }
+      }
+    }
     const content = await rawResponse.json();
-    return content;
+    return {
+      data: content
+    };
   }
 }
-export default Request;
+
+export default Request

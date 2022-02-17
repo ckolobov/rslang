@@ -24,15 +24,21 @@ class Drawer {
     options: T
   ) {
     const block: Component = new blockClass(options);
+    this.renderComponentStack.push(block);
     container.innerHTML = this.loader;
     container.innerHTML = await block.render();
+    // fix slow rendering issue
+    // https://stackoverflow.com/questions/11513392/how-to-detect-when-innerhtml-is-complete
+    setTimeout(() => this.afterRenderCall(), 1);
+  }
+
+  static async afterRenderCall() {
     while (this.renderComponentStack.length) {
       const componentFromStack = this.renderComponentStack.pop();
       if (componentFromStack) {
         await componentFromStack.after_render();
       }
     }
-    await block.after_render();
   }
 
   static async drawPage(page: new () => Page) {

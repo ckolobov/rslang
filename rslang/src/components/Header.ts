@@ -1,14 +1,15 @@
 import Component from './common/Component';
 import Drawer from './drawer/Drawer';
 import Button from './common/Button';
+import Authorization from '../services/Authorization';
 import AuthorizationForm from './common/AuthorizationForm';
 import '../scss/layout/_header.scss';
 
 class Header implements Component {
-  private class: string;
+  private authrization: Authorization;
 
-  public constructor(options) {
-    this.class = options.class;
+  public constructor() {
+    this.authrization = Authorization.getInstance();
   }
 
   public async render(): Promise<string> {
@@ -20,14 +21,14 @@ class Header implements Component {
     const authorizationButton = await Drawer.drawComponent(Button, {
       id: 'authorization-button',
       class: 'header__button',
-      text: `${AuthorizationForm.isAuthorized ? 'Log out' : 'Log in'}`,
+      text: `${this.authrization.isAuthorized() ? 'Log out' : 'Log in'}`,
     });
 
     const page = localStorage.getItem('rslang_current_page') || 0;
     const group = localStorage.getItem('rslang_current_group') || 0;
 
     const view = `
-    <div class="wrapper header__wrapper ${this.class ? this.class : ''}">
+    <div class="wrapper header header__wrapper">
       <a href="/#" class="logo link">
         <div class="logo__img"></div>
         <h1 class="logo__title">RS <span>Lang</span></h1>
@@ -71,15 +72,10 @@ class Header implements Component {
 
     const button = document.getElementById('authorization-button') as HTMLElement;
     const form = document.getElementById('authorization-form') as HTMLElement;
-    const inputs = document.querySelectorAll('.login__form input') as NodeListOf<HTMLInputElement>;
 
     button.addEventListener('click', () => {
-      if (AuthorizationForm.isAuthorized) {
-        AuthorizationForm.isAuthorized = false;
-        inputs.forEach((input) => (input.value = ''));
-        localStorage.clear();
-        button.innerHTML = 'Log in';
-        window.location.reload();
+      if (this.authrization.isAuthorized()) {
+        this.authrization.logoutUser();
       } else {
         form.classList.add('active');
       }
