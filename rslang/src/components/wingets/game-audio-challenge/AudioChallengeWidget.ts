@@ -19,7 +19,6 @@ const enum languageEnum {
    English = 'word',
 }
 
-
 class AudioChallengeWidget extends GameWidget {
   public container: HTMLElement;
   public page: number;
@@ -27,7 +26,6 @@ class AudioChallengeWidget extends GameWidget {
   private language = 'English';
   private questions: Word[] = [];
   private answersPool: Word[] = [];
-  private questionsFinished = false;
   private countWrong = 0;
   private countCorrect = 0;
   private questionContainer: HTMLElement | null = null;
@@ -37,7 +35,7 @@ class AudioChallengeWidget extends GameWidget {
   constructor(container: HTMLElement, group:number, page: number) {
     super();
     this.container = container;
-     this.group = group;
+    this.group = group;
     this.page = page;
   }
 
@@ -134,8 +132,11 @@ class AudioChallengeWidget extends GameWidget {
 
   private async getAnswersPool(): Promise<void> {
     const i: number = (this.page - 4 >= 0) ? (this.page - 4) : (this.page + 1);
-    this.answersPool.push(...await Request.getWordsList({page: i, group: this.group}),...await Request.getWordsList({page: i+1, group: this.group}),
-    ...await Request.getWordsList({page: i+2, group: this.group}),...await Request.getWordsList({page: i+3, group: this.group}));
+    const arr: Promise<any>[] = [];
+    for (let j = 0; j < 4; j++) {
+      arr.push(Request.getWordsList({page: i+j, group: this.group}))
+    }
+    this.answersPool = (await Promise.all(arr)).flat();
     this.shuffle(this.answersPool);  
   }
 

@@ -11,10 +11,21 @@ interface AudioChallengeQuestionStepOptions {
   onConfirm(result: boolean): void;
 }
 
+const keyCodeMapping = {
+  Digit1: 0,
+  Digit2: 1,
+  Digit3: 2,
+  Digit4: 3,
+  Digit5: 4,
+  Space: 'next',
+  Enter: 'next',
+};
+
 class AudioChallengeQuestionStep implements Component {
   private options: AudioChallengeQuestionStepOptions;
   private result = false;
   private isClickable = true;
+  private keyPressHandler = this.onKeyDown.bind(this);
 
   constructor(options: AudioChallengeQuestionStepOptions) {
     this.options = options;
@@ -61,6 +72,7 @@ class AudioChallengeQuestionStep implements Component {
     });
     const audioButton = document.querySelector('.audio-challenge-audio') as HTMLElement;
     audioButton.addEventListener('click', () => audio.play());
+    document.addEventListener('keydown', this.keyPressHandler);
   }
 
   private showRightAnswer() {
@@ -98,6 +110,31 @@ class AudioChallengeQuestionStep implements Component {
       button.classList.add('wrong-answer');
     }
     this.showRightAnswer();
+  }
+
+  private onKeyDown(event: KeyboardEvent): void {
+    const keyCode = event.code;
+    if (!(keyCode in keyCodeMapping)) return;
+    event.preventDefault();
+    event.stopPropagation();
+    if (typeof keyCodeMapping[keyCode] === 'number' && this.isClickable === true) {
+      this.isClickable = false;
+      this.result = keyCodeMapping[keyCode] === this.options.scenario;
+      if (!this.result) {
+        const button = document.querySelector(`.audio-challenge-question-button[data-num="${keyCodeMapping[keyCode]}"]`) as HTMLElement;
+        button.classList.add('wrong-answer');
+      }
+      this.showRightAnswer();
+    } else if (keyCodeMapping[keyCode] === 'next') {
+      const nextButton = document.querySelector(`.audio-challenge-idk-button`) as HTMLButtonElement;
+      if (nextButton.textContent === 'Не знаю') {
+        this.isClickable = false;
+        this.showRightAnswer();
+      } else if(nextButton.textContent === 'Далее') {
+        document.removeEventListener('keydown', this.keyPressHandler);
+        this.options.onConfirm(this.result);
+      }
+    }
   }
 }
 
