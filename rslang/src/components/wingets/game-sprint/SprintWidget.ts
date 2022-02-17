@@ -5,7 +5,7 @@ import SprintFirstStep from './SprintFirstStep';
 import SprintQuestionStep from './SprintQuestionStep';
 import QuestionStepComponents from './QuestionStepComponent';
 import { Containers } from '../GameWidget';
-import Request from '../../../services/Requests';
+import Request from '../../../services/Request/Requests';
 import GameResultStep from '../GameResultStep';
 
 const enum SprintSteps {

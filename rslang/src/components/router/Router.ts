@@ -45,10 +45,10 @@ class Router {
   }
 
   private async renderHeaderAndFooter(): Promise<void> {
-    const header = await Drawer.drawComponent(Header, {class: 'header'});
-    (document.getElementById('header_container') as HTMLElement).innerHTML = header;
-    const footer = await Drawer.drawComponent(Footer, {class: 'footer'});
-    (document.getElementById('footer_container') as HTMLElement).innerHTML = footer;
+    const headerContainer = document.getElementById('header_container') as HTMLElement;
+    await Drawer.drawBlock(Header, headerContainer, {});
+    const footerContainer = document.getElementById('footer_container') as HTMLElement;
+    await Drawer.drawBlock(Footer, footerContainer, {});
   }
 
   public init(): void {
@@ -56,8 +56,13 @@ class Router {
     window.addEventListener('hashchange', this.router);
 
     // Listen on page load:
-    window.addEventListener('load', this.renderHeaderAndFooter);
-    window.addEventListener('load', this.router);
+    if (document.readyState == 'loading') {
+      window.addEventListener('load', this.renderHeaderAndFooter);
+      window.addEventListener('load', this.router);
+    } else {
+      this.renderHeaderAndFooter();
+      this.router();
+    }
   }
 }
 

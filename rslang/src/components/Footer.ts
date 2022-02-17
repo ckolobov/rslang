@@ -2,15 +2,9 @@ import Component from './common/Component';
 import '../scss/layout/_footer.scss';
 
 class Footer implements Component {
-  private class: string;
-
-  public constructor(options) {
-    this.class = options.class;
-  }
-
   public async render(): Promise<string> {
     const view = `
-    <div class="wrapper footer__wrapper ${this.class ? this.class : ''}">
+    <div class="wrapper footer footer__wrapper}">
       <a class="link rs-logo" href="https://rs.school/">
         <div class="rs-logo__img"></div>
       </a>

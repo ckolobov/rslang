@@ -36,6 +36,11 @@ type User = {
   password: string,
 }
 
+type UserInfo = {
+  id: string,
+  token: string,
+}
+
 type Auth = {
   message: string,
   token: string,

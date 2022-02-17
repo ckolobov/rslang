@@ -1,44 +1,43 @@
 import Page from './Page';
 import Drawer from '../drawer/Drawer';
 import WordCard from '../common/WordCard';
-import Request, { Difficulty } from '../../services/Requests';
+import Request, { Difficulty } from '../../services/Request/Requests';
 import '../../scss/layout/_textbook.scss';
 import { Card } from '../common/WordCard';
-import AuthorizationForm from '../common/AuthorizationForm';
+import Authorization from '../../services/Authorization';
 import Utils from '../../services/Utils';
 
 class Textbook implements Page {
-  
   public async render(): Promise<string> {
+    const authorization = Authorization.getInstance();
     const url = Utils.parseRequestURL();
     const currentGroup = Number(url.id) || (Number(url.id) === 0 ? 0 : 7);
     const currentPage = Number(url.verb);
-    const userInfo: string | null = localStorage.getItem('userInfo');
     let currentId = '';
     let currentToken = '';
-    if (userInfo) {
-      AuthorizationForm.authorizationInfo = JSON.parse(userInfo);
-      currentId = AuthorizationForm.authorizationInfo.userId;
-      currentToken = AuthorizationForm.authorizationInfo.token;
+    if (authorization.isAuthorized()) {
+      const userInfo = authorization.getUserInfo();
+      currentId = userInfo.id;
+      currentToken = userInfo.token;
     }
     const pageMinus = currentPage > 0 ? currentPage - 1 : currentPage;
     const pagePlus = currentPage < 29 ? currentPage + 1 : currentPage;
-    const res: Card[] = 
-      currentGroup === 6 && AuthorizationForm.isAuthorized ? 
-      await Request.getAggregatedWordsList({id: currentId, token: currentToken, filter: '{"userWord.difficulty":"2"}'}): 
+    const res: Card[] =
+      currentGroup === 6 && authorization.isAuthorized() ?
+      await Request.getAggregatedWordsList({id: currentId, token: currentToken, filter: '{"userWord.difficulty":"2"}'}):
       await Request.getWordsList({group: currentGroup, page: currentPage});
-    const arrayLength: number = 
-      currentGroup === 6 && AuthorizationForm.isAuthorized ? 
-      res[0].paginatedResults.length: 
+    const arrayLength: number =
+      currentGroup === 6 && authorization.isAuthorized() ?
+      res[0].paginatedResults.length:
       res.length;
     let result = '';
     let total_diff = 0;
     for (let i = 0; i < arrayLength; i += 1) {
-      if (currentGroup===6 && AuthorizationForm.isAuthorized) {
+      if (currentGroup===6 && authorization.isAuthorized()) {
         res[0].paginatedResults[i]['diff'] = 1; //надо 2, но чтобы не фонило красным сделал 1
         result += await Drawer.drawComponent(WordCard, res[0].paginatedResults[i]);
       } else {
-        if(AuthorizationForm.isAuthorized) {
+        if (authorization.isAuthorized()) {
           let wordDiff: number;
           let total_correct_sprint: number;
           let total_wrong_sprint: number;
@@ -84,9 +83,9 @@ class Textbook implements Page {
         <div class="level-name">Elementary</div>
         <div class="level-description">
           <p>Элементарный уровень</p>
-          <p>Даже начальный уровень английского, усиленный достаточным словарным запасом, 
+          <p>Даже начальный уровень английского, усиленный достаточным словарным запасом,
           позволит вам чувствовать себя уверенно в любой ситуации, которая может возникнуть в другой стране.</p>
-          <p>Подобранные в этом разделе частицы речи полезны тем, что вы можете сразу же начинать их использовать. 
+          <p>Подобранные в этом разделе частицы речи полезны тем, что вы можете сразу же начинать их использовать.
           Это наиболее легкие и часто применимые English words.</p>
         </div>
       </a>
@@ -109,7 +108,7 @@ class Textbook implements Page {
         <div class="level-description">
           <p>Cредний уровень</p>
           <p>Словарный запас на среднем уровне дает еще больше возможностей для общения, работы и досуга. Как правило, с этого момента начинается не столько обучение, сколько совершенствование того, что уже было вами освоено.</p>
-          <p>На данном этапе Вы сможете вести спонтанную беседу без предварительной подготовки в спокойном ритме. Ваши знания позволят Вам объясняться, 
+          <p>На данном этапе Вы сможете вести спонтанную беседу без предварительной подготовки в спокойном ритме. Ваши знания позволят Вам объясняться,
           умело подбирая синонимы в случае незнания конкретных терминов</p>
         </div>
       </a>
@@ -143,7 +142,7 @@ class Textbook implements Page {
         <div class="level-description">
           <p>Профессиональный уровень</p>
           <p>Название уровня говорит само за себя - изучив данный уровень, Вы воистину можете считать себя настоящим профессионалом в вопросах английской словестности.</p>
-          <p>Теперь Вам подвластно абсолютно все, разговор на любую, даже самую специфическую тему щелкается Вами как орешки. 
+          <p>Теперь Вам подвластно абсолютно все, разговор на любую, даже самую специфическую тему щелкается Вами как орешки.
           С таким огромным словарным запасом теперь все зависит лишь от того, как часто вы сможете практиковаться во владении английским языком.</p>
         </div>
       </a>
