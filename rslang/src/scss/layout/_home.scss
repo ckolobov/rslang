@@ -75,10 +75,11 @@
 }
 
 .team-member__card {
-  width: 360px;
+  width: 380px;
+  text-align: center
 }
 
 .team-members {
-  @include horizontal-flex();
+  display: flex;
   justify-content: space-around;
 }

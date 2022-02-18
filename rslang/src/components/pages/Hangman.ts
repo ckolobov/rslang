@@ -1,5 +1,5 @@
 import Page from './Page';
-import Request from '../../services/Requests';
+import Request from '../../services/Request/Requests';
 import WordCard, { Card } from '../common/WordCard';
 import '../../scss/layout/_hangman.scss';
 import Drawer from '../drawer/Drawer';

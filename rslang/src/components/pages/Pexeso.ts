@@ -2,7 +2,7 @@ import Page from './Page';
 import '../../scss/layout/_pexeso.scss';
 import Drawer from '../drawer/Drawer';
 import PexesoCard from '../common/PexesoCard';
-import Request from '../../services/Requests';
+import Request from '../../services/Request/Requests';
 import Utils from '../../services/Utils';
 
 class Pexeso implements Page {

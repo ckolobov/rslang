@@ -63,6 +63,7 @@ class Statistics implements Page {
   }
 
   static data = {};
+  static learnedWords: number;
   static date;
   static statisticsTemplate = {
     games: {
@@ -97,9 +98,14 @@ class Statistics implements Page {
         userInfo.id,
         userInfo.token,
       );
+      Statistics.learnedWords = res.learnedWords;
       Statistics.data = res.optional;
     } finally {
       const date = Statistics.date;
+      if (Statistics.data == undefined) {
+        Statistics.data = {};
+        await Statistics.saveStatistics();
+      }
       if (Statistics.data[date] == undefined) {
         Statistics.addDayToStatistics(date);
         await Statistics.saveStatistics();
