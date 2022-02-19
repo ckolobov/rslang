@@ -281,7 +281,11 @@ class Request {
     token: string,
     wordid: string,
     difficulty: Difficulty,
-    correctInRow: number //при добавлении в список сложных/изученных вручную не нужен. Только в играх.
+    correctInRow: number,
+    correctTotalSprint: number,
+    wrongTotalSprint: number,
+    correctTotalAudioChallenge: number,
+    wrongTotalAudioChallenge: number,    
   ) {
     const rawResponse = await fetch(`${url}/users/${id}/words/${wordid}`, {
       method: 'PUT',
@@ -293,7 +297,11 @@ class Request {
       body: JSON.stringify({
         difficulty: `${difficulty}`,
         optional: {
-          correctInRow: `${correctInRow}`
+          correctInRow: `${correctInRow}`,
+          correctTotalSprint: `${correctTotalSprint}`,
+          wrongTotalSprint: `${wrongTotalSprint}`,
+          correctTotalAudioChallenge: `${correctTotalAudioChallenge}`,
+          wrongTotalAudioChallenge: `${wrongTotalAudioChallenge}`,
         },
       }),
     });

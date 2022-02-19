@@ -5,7 +5,7 @@ import Request from '../../services/Request/Requests';
 import Authorization from '../../services/Authorization';
 import { createUserErrorCodes, loginUserErrorCodes } from '../../services/Request/RequestErrorCodes';
 import '../../scss/components/_authorization-form.scss';
-
+import Statistics from '../pages/Statistics';
 const DEFAULT_USER_NAME = 'user';
 interface AuthorizationFormOptions {
   class: string;
@@ -130,6 +130,7 @@ class AuthorizationForm implements Component {
           this.showErrorMessage(ErrorFields.EMAIL, 'Unknown error!');
       }
     }
+    Statistics.updateStatistics();
   }
 
   public async after_render(): Promise<void> {

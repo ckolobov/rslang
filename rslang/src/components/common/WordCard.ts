@@ -2,6 +2,7 @@ import Component from './Component';
 import Utils from '../../services/Utils';
 import Authorization from '../../services/Authorization';
 import Request, { Difficulty } from '../../services/Request/Requests';
+import Statistics from '../pages/Statistics';
 
 export interface Card {
   _id: string;
@@ -22,6 +23,8 @@ export interface Card {
   wrongSprint: number;
   correctAudioChallenge: number;
   wrongAudioChallenge: number;
+  correctPexeso: number;
+  wrongPexeso: number;
   paginatedResults: Card[];
 }
 
@@ -64,11 +67,11 @@ class WordCard implements Component {
     this.audioExample = Utils.getFullURL('/') + options.audioExample;
     this.textMeaningTranslate = options.textMeaningTranslate;
     this.textExampleTranslate = options.textExampleTranslate;
-    this.diff = options.diff === undefined? 1: options.diff;
-    this.correctSprint = options.correctSprint === undefined? 0: options.correctSprint;
-    this.wrongSprint = options.wrongSprint === undefined? 0: options.wrongSprint;
-    this.correctAudioChallenge = options.correctAudioChallenge === undefined? 0: options.correctAudioChallenge;
-    this.wrongAudioChallenge = options.wrongAudioChallenge === undefined? 0: options.wrongAudioChallenge;
+    this.diff = isNaN(options.diff) ? 1: options.diff;
+    this.correctSprint = isNaN(options.correctSprint) ? 0: options.correctSprint;
+    this.wrongSprint = isNaN(options.wrongSprint) ? 0: options.wrongSprint;
+    this.correctAudioChallenge = isNaN(options.correctAudioChallenge) ? 0: options.correctAudioChallenge;
+    this.wrongAudioChallenge = isNaN(options.wrongAudioChallenge) ? 0: options.wrongAudioChallenge;
     this.authorization = Authorization.getInstance();
   }
 
@@ -84,8 +87,8 @@ class WordCard implements Component {
       <p class="game-type">Sprint</p>
       <div class="sprint-game-info">
         <div class="game-result-box">
-        <p class="game-result">Correct: ${this.correctSprint}</p>
-        <p class="game-result">Wrong: ${this.wrongSprint}</p>
+          <p class="game-result">Correct: ${this.correctSprint}</p>
+          <p class="game-result">Wrong: ${this.wrongSprint}</p>
         </div>
         <div class="diagramm">
           <svg viewBox="0 0 300 300" >
@@ -97,9 +100,9 @@ class WordCard implements Component {
       </div>
       <p class="game-type">Audio Challenge</p>
       <div class="audio-challenge-game-info">
-      <div class="game-result-box">
-        <p class="game-result">Correct: ${this.correctAudioChallenge}</p>
-        <p class="game-result">Wrong: ${this.wrongAudioChallenge}</p>
+        <div class="game-result-box">
+          <p class="game-result">Correct: ${this.correctAudioChallenge}</p>
+          <p class="game-result">Wrong: ${this.wrongAudioChallenge}</p>
         </div>
         <div class="diagramm">
           <svg viewBox="0 0 300 300" >
@@ -171,8 +174,12 @@ class WordCard implements Component {
       button.innerHTML = 'Убрать из сложного';
       card.classList.remove(`${CardDifficultyStyle.NORMAL}`);
       card.classList.add(`${CardDifficultyStyle.HARD}`);
-      (parent.children[1] as HTMLElement).setAttribute("style","pointer-events:none");
-      await Request.editWordInUserWordsList(currentId, currentToken, card.id, Difficulty.HARD, 0);
+      (parent.children[2] as HTMLElement).setAttribute("style","pointer-events:none");
+      const word = await Request.getWordFromUserWordsList(currentId, currentToken, card.id);
+      await Request.editWordInUserWordsList(
+        currentId, currentToken, card.id, Difficulty.HARD, 
+        word.optional.correctInRow, word.optional.correctTotalSprint, 
+        word.optional.wrongTotalSprint, word.optional.correctTotalAudioChallenge, word.optional.wrongTotalAudioChallenge);
       localStorage.setItem('rslang-current-page-total-difficulty', `${total_diff + 1}`);
       if(total_diff-1 !== 0) {
         (document.querySelectorAll('.game__button') as NodeListOf<HTMLElement>).forEach((el)=>el.setAttribute('style', 'pointer-events:""'));
@@ -181,8 +188,12 @@ class WordCard implements Component {
       button.innerHTML = 'Добавить в сложное';
       card.classList.remove(`${CardDifficultyStyle.HARD}`);
       card.classList.add(`${CardDifficultyStyle.NORMAL}`);
-      (parent.children[1] as HTMLElement).setAttribute("style","pointer-events:''");
-      await Request.editWordInUserWordsList(currentId, currentToken, card.id, Difficulty.NORMAL, 0);
+      (parent.children[2] as HTMLElement).setAttribute("style","pointer-events:''");
+      const word = await Request.getWordFromUserWordsList(currentId, currentToken, card.id);
+      await Request.editWordInUserWordsList(
+        currentId, currentToken, card.id, Difficulty.NORMAL, 
+        word.optional.correctInRow, word.optional.correctTotalSprint, 
+        word.optional.wrongTotalSprint, word.optional.correctTotalAudioChallenge, word.optional.wrongTotalAudioChallenge);
       localStorage.setItem('rslang-current-page-total-difficulty', `${total_diff - 1}`);
       if(total_diff-1 === 0) {
         (document.querySelectorAll('.game__button') as NodeListOf<HTMLElement>).forEach((el)=>el.setAttribute('style', 'pointer-events:none'));
@@ -194,6 +205,8 @@ class WordCard implements Component {
     const button = event.currentTarget as HTMLElement;
     const parent = button.parentElement as HTMLElement;
     const card = parent.parentElement as HTMLElement;
+    const dateToday = new Date();
+    const date = `${dateToday.getDate().toString().padStart(2, '0')}-${dateToday.getMonth().toString().padStart(2, '0')}-${dateToday.getFullYear()}`;
     let currentId = '';
     let currentToken = '';
     if (this.authorization.isAuthorized()) {
@@ -207,7 +220,15 @@ class WordCard implements Component {
       card.classList.remove(`${CardDifficultyStyle.NORMAL}`);
       card.classList.add(`${CardDifficultyStyle.LEARNED}`);
       (parent.children[0] as HTMLElement).setAttribute("style","pointer-events:none");
-      await Request.editWordInUserWordsList(currentId, currentToken, card.id, Difficulty.LEARNED, 0);
+      const word = await Request.getWordFromUserWordsList(currentId, currentToken, card.id);
+      await Request.editWordInUserWordsList(
+        currentId, currentToken, card.id, Difficulty.LEARNED, 
+        word.optional.correctInRow, word.optional.correctTotalSprint, 
+        word.optional.wrongTotalSprint, word.optional.correctTotalAudioChallenge, word.optional.wrongTotalAudioChallenge);
+      await Statistics.updateStatistics();
+      Statistics.learnedWords += 1;
+      Statistics.data[date].textbookLearn  += 1;
+      await Request.editStatistics(currentId, currentToken, Statistics.data, Statistics.learnedWords);
       localStorage.setItem('rslang-current-page-total-difficulty', `${total_diff - 1}`);
       if(total_diff-1 === 0) {
         (document.querySelectorAll('.game__button') as NodeListOf<HTMLElement>).forEach((el)=>el.setAttribute('style', 'pointer-events:none'));
@@ -217,7 +238,15 @@ class WordCard implements Component {
       card.classList.remove(`${CardDifficultyStyle.LEARNED}`);
       card.classList.add(`${CardDifficultyStyle.NORMAL}`);
       (parent.children[0] as HTMLElement).setAttribute("style","pointer-events:''");
-      await Request.editWordInUserWordsList(currentId, currentToken, card.id, Difficulty.NORMAL, 0);
+      const word = await Request.getWordFromUserWordsList(currentId, currentToken, card.id);
+      await Request.editWordInUserWordsList(
+        currentId, currentToken, card.id, Difficulty.NORMAL, 
+        word.optional.correctInRow, word.optional.correctTotalSprint, 
+        word.optional.wrongTotalSprint, word.optional.correctTotalAudioChallenge, word.optional.wrongTotalAudioChallenge);
+      await Statistics.updateStatistics();
+      Statistics.learnedWords -= 1;
+      Statistics.data[date].textbookLearn  -= 1;
+      await Request.editStatistics(currentId, currentToken, Statistics.data, Statistics.learnedWords);
       localStorage.setItem('rslang-current-page-total-difficulty', `${total_diff + 1}`);
       if(total_diff-1 !== 0) {
         (document.querySelectorAll('.game__button') as NodeListOf<HTMLElement>).forEach((el)=>el.setAttribute('style', 'pointer-events:""'));
