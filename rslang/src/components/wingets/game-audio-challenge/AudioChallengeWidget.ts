@@ -98,25 +98,29 @@ class AudioChallengeWidget extends GameWidget {
     if (!word) {
       throw Error('No word for answer');
     }
+    this.continueTimer();
     return await Drawer.drawBlock(AudioChallengeQuestionStep, this.questionContainer, {
       word: word,
       answers: answers,
       scenario: scenario,
       language: this.language === 'English' ? languageEnum.English : languageEnum.Russian ,
-      onConfirm: (result: boolean) => {
-        this.playerResult.push([word, result]);
-        if (!result) {
-          this.countWrong += 1;
-        } else {
-          this.countCorrect += 1;
-        }
-        this.updateResults();
+      onConfirm: () => {
         if (this.timeFinished) {
           this.showStep(AudioChallengeSteps.RESULTS);
         } else {
           this.showStep(AudioChallengeSteps.GAME_QUESTION);
         }
       },
+      onAnswer: (result: boolean) => {
+        this.pauseTimer();
+        this.playerResult.push([word, result]);
+        if (!result) {
+          this.countWrong += 1;
+        } else {
+          this.countCorrect += 1;
+        }
+        this.updateResults(); 
+      }
     });
   }
 

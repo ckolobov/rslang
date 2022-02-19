@@ -8,7 +8,8 @@ interface AudioChallengeQuestionStepOptions {
   answers: Word[];
   scenario: number;
   language: string;
-  onConfirm(result: boolean): void;
+  onConfirm(): void;
+  onAnswer(result: boolean) : void;
 }
 
 const keyCodeMapping = {
@@ -26,6 +27,7 @@ class AudioChallengeQuestionStep implements Component {
   private result = false;
   private isClickable = true;
   private keyPressHandler = this.onKeyDown.bind(this);
+  private nextBtnPressHandler = this.onNextBtnClick.bind(this);
 
   constructor(options: AudioChallengeQuestionStepOptions) {
     this.options = options;
@@ -66,10 +68,7 @@ class AudioChallengeQuestionStep implements Component {
     const buttonsBlock: HTMLElement = document.getElementById('audio-challenge-question-buttons') as HTMLElement;
     buttonsBlock.addEventListener('click', this.onButtonClick.bind(this));
     const nextButton = document.querySelector(`.audio-challenge-idk-button`) as HTMLButtonElement;
-    nextButton.addEventListener('click', () => {
-      this.isClickable = false;
-      this.showRightAnswer();
-    });
+    nextButton.addEventListener('click', this.nextBtnPressHandler);
     const audioButton = document.querySelector('.audio-challenge-audio') as HTMLElement;
     audioButton.addEventListener('click', () => audio.play());
     document.addEventListener('keydown', this.keyPressHandler);
@@ -82,10 +81,7 @@ class AudioChallengeQuestionStep implements Component {
     const audioContainer = document.querySelector(`.audio-container`) as HTMLElement;
     rightButton.classList.add('right-answer');
     nextButton.innerHTML = 'Далее';
-    nextButton.removeEventListener('click', () => {
-      this.isClickable = false;
-      this.showRightAnswer();
-    });
+    nextButton.removeEventListener('click', this.nextBtnPressHandler);
     audioButton.classList.add('active');
     audioContainer.prepend(this.options.word.word);
     const img = new Image();
@@ -96,9 +92,16 @@ class AudioChallengeQuestionStep implements Component {
     img.onload = () => {
       audioContainer.prepend(img);
     };
+    this.options.onAnswer(this.result);
     nextButton.addEventListener('click', () =>
-      this.options.onConfirm(this.result)
+      this.options.onConfirm()
     );
+  }
+
+  private onNextBtnClick() {
+    console.log('1')
+    this.isClickable = false;
+    this.showRightAnswer();
   }
 
   private onButtonClick(event: Event) {
@@ -132,7 +135,7 @@ class AudioChallengeQuestionStep implements Component {
         this.showRightAnswer();
       } else if(nextButton.textContent === 'Далее') {
         document.removeEventListener('keydown', this.keyPressHandler);
-        this.options.onConfirm(this.result);
+        this.options.onConfirm();
       }
     }
   }
