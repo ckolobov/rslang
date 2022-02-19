@@ -60,7 +60,7 @@ class AudioChallengeQuestionStep implements Component {
     audio.play();
     const buttons = document.querySelectorAll('.audio-challenge-question-button') as NodeListOf<HTMLElement>;
     buttons.forEach((button, index) => {
-      button.innerHTML = this.options.answers[index][this.options.language];
+      button.innerHTML = `${index + 1}) ${this.options.answers[index][this.options.language]}`;
       button.setAttribute('data-num', index.toString());
     });
     const buttonsBlock: HTMLElement = document.getElementById('audio-challenge-question-buttons') as HTMLElement;

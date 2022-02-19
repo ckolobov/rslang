@@ -31,6 +31,7 @@ class SprintWidget extends GameWidget {
   private questionsFinished = false;
   private countWrong = 0;
   private countCorrect = 0;
+  private playerResult: Array<[Word, boolean]> = [];
   private questionContainer: HTMLElement | null = null;
   private correctAnswersContainer: HTMLElement | null = null;
   private wrongAnswersContainer: HTMLElement | null = null;
@@ -108,6 +109,7 @@ class SprintWidget extends GameWidget {
       translation: translation,
       scenario: scenario,
       onConfirm: (result: Results) => {
+        this.playerResult.push([word, Boolean(result)]);
         if (result === Results.WRONG) {
           this.countWrong += 1;
         } else {
@@ -127,6 +129,7 @@ class SprintWidget extends GameWidget {
     return Drawer.drawBlock(GameResultStep, this.container, {
       correct: this.countCorrect,
       wrong: this.countWrong,
+      playerResult: this.playerResult,
     });
   }
 

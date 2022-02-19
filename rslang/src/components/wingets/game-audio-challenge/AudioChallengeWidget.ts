@@ -28,6 +28,7 @@ class AudioChallengeWidget extends GameWidget {
   private answersPool: Word[] = [];
   private countWrong = 0;
   private countCorrect = 0;
+  private playerResult: Array<[Word, boolean]> = [];
   private questionContainer: HTMLElement | null = null;
   private correctAnswersContainer: HTMLElement | null = null;
   private wrongAnswersContainer: HTMLElement | null = null;
@@ -103,6 +104,7 @@ class AudioChallengeWidget extends GameWidget {
       scenario: scenario,
       language: this.language === 'English' ? languageEnum.English : languageEnum.Russian ,
       onConfirm: (result: boolean) => {
+        this.playerResult.push([word, result]);
         if (!result) {
           this.countWrong += 1;
         } else {
@@ -122,6 +124,7 @@ class AudioChallengeWidget extends GameWidget {
     return Drawer.drawBlock(GameResultStep, this.container, {
       correct: this.countCorrect,
       wrong: this.countWrong,
+      playerResult: this.playerResult,
     });
   }
 

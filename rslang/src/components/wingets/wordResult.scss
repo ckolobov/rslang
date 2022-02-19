@@ -1,0 +1,35 @@
+@import '../../scss/abstract/constants';
+
+.word-result {
+  padding: 0 15px;
+  display: flex;
+  align-items: center;
+  column-gap: 20px;
+  min-width: max-content;
+  .audio {
+    width: 30px;
+    height: 30px;
+    @include bg-size();
+    background-image: url('../../assets/svg/audio.svg');
+    filter: invert(100%);
+    transition: 0.3s;
+    cursor: pointer;
+    &:hover {
+      filter: invert(70%);
+    }
+  }
+}
+
+.word-result__result {
+  width: 30px;
+  height: 30px;
+  @include bg-size();
+}
+
+.word-result__result_correct {
+  background-image: url('../../assets/svg/circle-correct.svg');
+}
+
+.word-result__result_wrong {
+  background-image: url('../../assets/svg/circle-wrong.svg');
+}
