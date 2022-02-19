@@ -168,7 +168,7 @@ class Textbook implements Page {
     </section>
     <section>
       <div class="wrapper page-changer__wrapper" style="${currentGroup === 6 || currentGroup === 7 ? 'display:none' : ''}">
-        <a href="/#/audio_challenge" class="${logStatus === 'Log out' ? 'button' : 'button_grey'} game__button" style="pointer-events:${logStatus === 'Log out' ? '' : 'none'}">Audio challenge</a>
+        <a href="/#/audio_challenge/${currentGroup}/${currentPage}" class="${logStatus === 'Log out' ? 'button' : 'button_grey'} game__button" style="pointer-events:${logStatus === 'Log out' ? '' : 'none'}">Audio challenge</a>
         <div class="page-buttons" id="page-buttons">
           <a href="/#/textbook/${currentGroup}/0" class="page-changer" id="page-start"><<</a>
           <a href="/#/textbook/${currentGroup}/${pageMinus}" class="page-changer" id="page-minus"><</a>
@@ -176,7 +176,7 @@ class Textbook implements Page {
           <a href="/#/textbook/${currentGroup}/${pagePlus}" class="page-changer" id="page-plus">></a>
           <a href="/#/textbook/${currentGroup}/29" class="page-changer" id="page-end">>></a>
         </div>
-        <a href="/#/sprint" class="${logStatus === 'Log out' ? 'button' : 'button_grey'} game__button" style="pointer-events:${logStatus === 'Log out' ? '' : 'none'}">Sprint</a>
+        <a href="/#/game-sprint/${currentGroup}/${currentPage}" class="${logStatus === 'Log out' ? 'button' : 'button_grey'} game__button" style="pointer-events:${logStatus === 'Log out' ? '' : 'none'}">Sprint</a>
       </div>
     </section>
       `;

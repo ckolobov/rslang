@@ -5,6 +5,7 @@ class Error404 implements Page {
     const view = `
         <section class="section">
             <h1> 404 Error </h1>
+            <p>Page not found</p>
         </section>
     `;
     return view;

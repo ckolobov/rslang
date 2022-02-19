@@ -1,5 +1,6 @@
 import { Request } from '../components/router/Router';
-const url = 'http://localhost:3001';
+import settings from '../components/app/settings';
+const url = settings.BACKEND_DOMAIN;
 
 const Utils = {
   // --------------------------------
@@ -17,7 +18,7 @@ const Utils = {
     return request;
   },
 
-  randomizeArray: (arr: any[]) => {
+  randomizeArray: <T>(arr: T[]): T[] => {
     const result = [...arr];
     let currentIndex = result.length;
     let randomIndex: number;
@@ -34,7 +35,7 @@ const Utils = {
 
     return result;
   },
-  
+
   getFullURL: (hash:string) => {
     return url + hash;
   },

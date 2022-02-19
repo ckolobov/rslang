@@ -16,7 +16,7 @@ class AudioChallenge implements Page {
     const AudioChallengeWidgetContainer = document.getElementById(
       AUDIO_CHALLENGE_WIDGET_CONTAINER_ID
     ) as HTMLElement;
-    const widget = new AudioChallengeWidget(AudioChallengeWidgetContainer,1,1);
+    const widget = new AudioChallengeWidget(AudioChallengeWidgetContainer);
     await widget.showFirsStep();
   }
 }

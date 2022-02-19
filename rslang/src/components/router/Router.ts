@@ -23,9 +23,11 @@ const routes: Record<string, new () => Page> = {
   '/textbook/:id/:verb': Textbook,
   '/statistics': Statistics,
   '/audio_challenge': AudioChallenge,
+  '/audio_challenge/:id/:verb': AudioChallenge,
   '/hangman': Hangman,
   '/pexeso': Pexeso,
   '/game-sprint': Sprint,
+  '/game-sprint/:id/:verb': Sprint,
 };
 
 class Router {
