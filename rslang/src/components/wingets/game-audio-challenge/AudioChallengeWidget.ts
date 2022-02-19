@@ -1,34 +1,31 @@
-import './SprintGame.scss';
+import './audioChallenge.scss';
 import Drawer from '../../drawer/Drawer';
 import GameWidget from '../GameWidget';
-import SprintFirstStep from './SprintFirstStep';
-import SprintQuestionStep from './SprintQuestionStep';
-import QuestionStepComponents from './QuestionStepComponent';
+import AudioChallengeFirstStep from './AudioChallengeFirstStep';
+import QuestionStepComponents from '../game-sprint/QuestionStepComponent';
+import AudioChallengeQuestionStep from './AudioChallengeQuestionStep'
 import { Containers } from '../GameWidget';
-import Request from '../../../services/Request/Requests';
+import Request from '../../../services/Requests';
 import GameResultStep from '../GameResultStep';
 
-const enum SprintSteps {
+const enum AudioChallengeSteps {
   FIRST_STEP,
   GAME_QUESTION,
   RESULTS,
 }
 
-export const enum Scenario {
-  WRONG_TRANSLATION,
-  CORRECT_TRANSLATION,
+const enum languageEnum {
+   Russian = 'wordTranslate',
+   English = 'word',
 }
 
-export const enum Results {
-  WRONG,
-  CORRECT,
-}
-
-class SprintWidget extends GameWidget {
+class AudioChallengeWidget extends GameWidget {
   public container: HTMLElement;
+  public page: number;
+  public group: number;
+  private language = 'English';
   private questions: Word[] = [];
   private answersPool: Word[] = [];
-  private questionsFinished = false;
   private countWrong = 0;
   private countCorrect = 0;
   private playerResult: Array<[Word, boolean]> = [];
@@ -36,27 +33,30 @@ class SprintWidget extends GameWidget {
   private correctAnswersContainer: HTMLElement | null = null;
   private wrongAnswersContainer: HTMLElement | null = null;
 
-  constructor(container: HTMLElement) {
+  constructor(container: HTMLElement, group:number, page: number) {
     super();
     this.container = container;
+    this.group = group;
+    this.page = page;
   }
 
   public async showStep(stepNumber: number): Promise<void> {
     switch (stepNumber) {
-      case SprintSteps.FIRST_STEP:
+      case AudioChallengeSteps.FIRST_STEP:
         return await this.getFirstStep();
-      case SprintSteps.GAME_QUESTION:
+      case AudioChallengeSteps.GAME_QUESTION:
         return this.getQuestionStep();
-      case SprintSteps.RESULTS:
+      case AudioChallengeSteps.RESULTS:
         return this.getResultsStep();
       default:
-        throw new Error('No such step in SprintWidget');
+        throw new Error('No such step in audioChallengeWidget');
     }
   }
 
   private async getFirstStep(): Promise<void> {
-    return await Drawer.drawBlock(SprintFirstStep, this.container, {
-      onConfirm: async () => {
+    return await Drawer.drawBlock(AudioChallengeFirstStep, this.container, {
+      onConfirm: async (language) => {
+          this.language = language;
         await Drawer.drawBlock(QuestionStepComponents, this.container, {
           timerContainer: Containers.TIMER_CONTAINER_ID,
           questionsContainer: Containers.QUESTIONS_CONTAINER_ID,
@@ -73,55 +73,54 @@ class SprintWidget extends GameWidget {
           Containers.WRONG_ANSWERS_CONTAINER_ID
         );
         this.updateResults();
+        await this.getQuestions();
         await this.getAnswersPool();
         this.startTimer();
-        this.showStep(SprintSteps.GAME_QUESTION);
+        this.showStep(AudioChallengeSteps.GAME_QUESTION);
       },
     });
   }
 
   private async getQuestionStep() {
-    if (this.questions.length <= 0) {
-      this.pauseTimer();
-      await this.getQuestions();
-      if (this.questionsFinished) {
-        this.stopTimer();
-        this.showStep(SprintSteps.RESULTS);
-      }
-      this.continueTimer();
+    if (this.answersPool.length <= 0 || this.questions.length <=0) {
+      this.stopTimer();
+      return this.showStep(AudioChallengeSteps.RESULTS);   
     }
-    const scenario: Scenario = Math.round(Math.random());
+    const scenario = Math.floor(Math.random() * 5);
     const word = this.questions.pop();
-    const wrongAnswer =
-      this.answersPool[
-        Math.round(Math.random() * (this.answersPool.length - 1))
-      ];
-    const translation =
-      scenario === Scenario.CORRECT_TRANSLATION ? word : wrongAnswer;
+    const answers = this.answersPool.splice(0, 4);
+    if(word) {
+      answers.splice(scenario, 0, word);  
+    }
     if (!this.questionContainer) {
       throw Error('No question container found');
     }
-    if (!word || !translation) {
-      throw Error('No word for answer or question');
+    if (!word) {
+      throw Error('No word for answer');
     }
-    return await Drawer.drawBlock(SprintQuestionStep, this.questionContainer, {
+    this.continueTimer();
+    return await Drawer.drawBlock(AudioChallengeQuestionStep, this.questionContainer, {
       word: word,
-      translation: translation,
+      answers: answers,
       scenario: scenario,
-      onConfirm: (result: Results) => {
-        this.playerResult.push([word, Boolean(result)]);
-        if (result === Results.WRONG) {
+      language: this.language === 'English' ? languageEnum.English : languageEnum.Russian ,
+      onConfirm: () => {
+        if (this.timeFinished) {
+          this.showStep(AudioChallengeSteps.RESULTS);
+        } else {
+          this.showStep(AudioChallengeSteps.GAME_QUESTION);
+        }
+      },
+      onAnswer: (result: boolean) => {
+        this.pauseTimer();
+        this.playerResult.push([word, result]);
+        if (!result) {
           this.countWrong += 1;
         } else {
           this.countCorrect += 1;
         }
-        this.updateResults();
-        if (this.timeFinished) {
-          this.showStep(SprintSteps.RESULTS);
-        } else {
-          this.showStep(SprintSteps.GAME_QUESTION);
-        }
-      },
+        this.updateResults(); 
+      }
     });
   }
 
@@ -134,11 +133,18 @@ class SprintWidget extends GameWidget {
   }
 
   private async getQuestions(): Promise<void> {
-    this.questions = await Request.getWordsList({ page: 2 });
+    this.questions = await Request.getWordsList({ page: this.page, group: this.group });
+    this.shuffle(this.questions); 
   }
 
   private async getAnswersPool(): Promise<void> {
-    this.answersPool = await Request.getWordsList({});
+    const i: number = (this.page - 4 >= 0) ? (this.page - 4) : (this.page + 1);
+    const arr: Promise<any>[] = [];
+    for (let j = 0; j < 4; j++) {
+      arr.push(Request.getWordsList({page: i+j, group: this.group}))
+    }
+    this.answersPool = (await Promise.all(arr)).flat();
+    this.shuffle(this.answersPool);  
   }
 
   private updateResults(): void {
@@ -150,4 +156,4 @@ class SprintWidget extends GameWidget {
   }
 }
 
-export default SprintWidget;
+export default AudioChallengeWidget;

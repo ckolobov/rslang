@@ -4,7 +4,7 @@ import '../../scss/components/_button.scss';
 interface ButtonOptions {
   class?: string;
   id?: string;
-  text: string;
+  text?: string;
   additionalAttributes?: string;
 }
 class Button implements Component {
@@ -22,7 +22,7 @@ class Button implements Component {
         this.options.additionalAttributes
           ? this.options.additionalAttributes
           : ''
-      }>${this.options.text}</button>
+      }>${this.options.text ? this.options.text : ''}</button>
     `;
     return view;
   }
