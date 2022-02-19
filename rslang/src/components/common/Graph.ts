@@ -1,23 +1,22 @@
-import Component from './Component';
 import '../../scss/components/_graph.scss';
 import * as d3 from 'd3';
 
 interface GraphOptions {
-  dateList: string[], 
-  sprintNewWords: number[], 
-  sprintGuess: number[],
-  sprintTotal: number[], 
-  sprintLearnedWords: number[], 
-  sprintRow: number[]
+  dateList: string[],
+  sprintNewWords: number[],
+  sprintGuess?: number[],
+  sprintTotal?: number[],
+  sprintLearnedWords?: number[],
+  sprintRow?: number[]
 }
-class Graph implements Component {
+class Graph {
   private options: GraphOptions;
 
   public constructor(options: GraphOptions) {
     this.options = options;
   }
 
-  public async render(): Promise<string> {
+  public async render(): Promise<void> {
     console.log('нажали');
     const width = 800;
     const height = 500;
@@ -42,10 +41,11 @@ class Graph implements Component {
     const line = d3.line().curve(d3.curveMonotoneX).x(function(d){return d.x;}).y(function(d){return d.y;});
     svg.append('g').append('path').attr('d', line(data)).style('stroke', 'steelblue').style('stroke-width', 2);
     svg.selectAll(".dot").data(data).enter().append("circle").attr("class", "dot").attr("r", 3.5).attr("cx", function(d) { return d.x; }).attr("cy", function(d) { return d.y; });
-    const view = `
-      ${(document.querySelector('.axis') as SVGElement).outerHTML}
-    `;
-    return view;
+    // const view = `
+    //   ${(document.querySelector('.axis') as SVGElement).outerHTML}
+    // `;
+    // console.log(svg);
+    // return svg;
   }
 
 

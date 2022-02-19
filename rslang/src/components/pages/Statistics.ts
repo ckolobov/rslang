@@ -25,7 +25,7 @@ class Statistics implements Page {
     }
     const totalAccuracy = total.total === 0 ? '0%' : ((total.guess * 100) / total.total).toFixed(1) + '%';
 
-    // 
+    //
     const statisticsAllTime = `
     <div id="all_time_statistics_container">
       <h1>Statistics for all time</h1>
@@ -54,7 +54,7 @@ class Statistics implements Page {
       </div>
       <div class="stat-refresh button" id="stat-refresh">Refresh</div>
     </div>`;
-    // 
+    //
     const statisticsDay = `
     <div id="today_statistics_container">
       <h1>Statistics for today</h1>
@@ -154,6 +154,7 @@ class Statistics implements Page {
         await Statistics.saveStatistics();
       }
     }
+    console.log('Update Statistics');
   }
 
   static addDayToStatistics(date: string) {
@@ -189,11 +190,15 @@ class Statistics implements Page {
     }
     const parameters = {'dateList': dateList, 'sprintNewWords': sprintNewWords, 'sprintGuess': sprintGuess,
        'sprintTotal': sprintTotal, 'sprintLearnedWords': sprintLearnedWords, 'sprintRow': sprintRow};
-    (document.getElementById('all_time_statistics_container') as HTMLElement).innerHTML += await Drawer.drawComponent(Graph, parameters);
+    // (document.getElementById('all_time_statistics_container') as HTMLElement).innerHTML += await Drawer.drawComponent(Graph, parameters);
+    const graph = new Graph(parameters);
+    const render = await graph.render();
+    console.log(render);
+    (document.getElementById('all_time_statistics_container') as HTMLElement).append();
   }
 
   public async after_render(): Promise<void> {
-    
+
     setTimeout(()=> {
       const refreshButton = document.getElementById('stat-refresh') as HTMLElement;
       console.log(refreshButton);
