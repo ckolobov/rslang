@@ -1,0 +1,50 @@
+@import '../abstract/constants';
+
+.stat-settings {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+
+.stat-setting-item {
+  display: flex;
+  flex-direction: column;
+  margin: 0 20px;
+  justify-content: center;
+  align-items: center;
+}
+
+.stat-setting-select {
+  width: 220px;
+  color: black;
+  background-color: #8fd4e2;
+  opacity: 0.9;
+  cursor: pointer;
+  text-align: center;
+}
+
+.stat-refresh {
+  margin: 10px auto !important;
+  width: fit-content;
+}
+
+.axis path, 
+.axis line {
+  fill: none;
+  stroke: #333;
+}
+
+.axis .grid-line {
+  stroke: pink;
+  stroke-opacity: 0.2;
+}
+
+.axis text {
+  font: 10px Arial;
+}
+
+.dot {
+    stroke: steelblue;
+    fill: lightblue;
+}

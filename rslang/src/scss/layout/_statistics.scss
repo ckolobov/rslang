@@ -1,5 +1,12 @@
 @import '../abstract/constants';
 
+.statistics-type {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: center;
+}
+
 .day-statistics-table {
   font-size: 17px;
   text-align: center;

@@ -5,7 +5,7 @@ import AudioChallengeFirstStep from './AudioChallengeFirstStep';
 import QuestionStepComponents from '../game-sprint/QuestionStepComponent';
 import AudioChallengeQuestionStep from './AudioChallengeQuestionStep'
 import { Containers } from '../GameWidget';
-import Request from '../../../services/Requests';
+import Request from '../../../services/Request/Requests';
 import GameResultStep from '../GameResultStep';
 
 const enum AudioChallengeSteps {
