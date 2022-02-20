@@ -25,9 +25,8 @@ class Statistics implements Page {
     }
     const totalAccuracy = total.total === 0 ? '0%' : ((total.guess * 100) / total.total).toFixed(1) + '%';
 
-    //
     const statisticsAllTime = `
-    <div id="all_time_statistics_container">
+    <div class="stat-container" id="all_time_statistics_container" style="display: none">
       <h1>Statistics for all time</h1>
       <div class="stat-settings">
         <div class="stat-setting-item">
@@ -54,9 +53,9 @@ class Statistics implements Page {
       </div>
       <div class="stat-refresh button" id="stat-refresh">Refresh</div>
     </div>`;
-    //
+
     const statisticsDay = `
-    <div id="today_statistics_container">
+    <div class="stat-container" id="today_statistics_container">
       <h1>Statistics for today</h1>
       <table class="day-statistics-table">
         <thead class="day-statistics-table__head">
@@ -96,8 +95,8 @@ class Statistics implements Page {
     `;
     const view = `
     <div class="statistics-type">
-      <div class="button">Statistics today</div>
-      <div class="button_grey">Statistics all-time</div>
+      <div class="button" id="stat-button-today">Statistics today</div>
+      <div class="button_grey" id="stat-button-all-time">Statistics all-time</div>
     </div>
     ${statisticsDay}
     ${statisticsAllTime}
@@ -111,6 +110,7 @@ class Statistics implements Page {
   static statisticsTemplate = {
     games: {
       sprint: {
+        gamescount: 0,
         new: 0,
         guess: 0,
         total: 0,
@@ -118,11 +118,30 @@ class Statistics implements Page {
         row: 0,
       },
       audioChallenge: {
+        gamescount: 0,
         new: 0,
         guess: 0,
         total: 0,
         learn: 0,
         row: 0,
+      },
+      pexesoOCM: {
+        gamescount: 0,
+        new: 0,
+        guess: 0,
+        total: 0,
+        learn: 0,
+        row: 0,
+      },
+      pexesoCCM: {
+        gamescount: 0,
+        guess: 0,
+        total: 0,
+      },
+      hangman: {
+        gamescount: 0,
+        guess: 0,
+        total: 0,
       },
     },
     textbookLearn: 0,
@@ -178,34 +197,119 @@ class Statistics implements Page {
     const sprintTotal: number[] = [];
     const sprintLearnedWords: number[] = [];
     const sprintRow: number[] = [];
-    // const sprintPlayedGames: number[] = [];
+    const sprintPlayedGames: number[] = [];
+    const audioChallengeNewWords: number[] = [];
+    const audioChallengeGuess: number[] = [];
+    const audioChallengeTotal: number[] = [];
+    const audioChallengeLearnedWords: number[] = [];
+    const audioChallengeRow: number[] = [];
+    const audioChallengePlayedGames: number[] = [];
+    const pexesoOCMNewWords: number[] = [];
+    const pexesoOCMGuess: number[] = [];
+    const pexesoOCMTotal: number[] = [];
+    const pexesoOCMLearnedWords: number[] = [];
+    const pexesoOCMRow: number[] = [];
+    const pexesoOCMPlayedGames: number[] = [];
+    const hangmanGuess: number[] = [];
+    const hangmanTotal: number[] = [];
+    const hangmanPlayedGames: number[] = [];
+    const pexesoCCMGuess: number[] = [];
+    const pexesoCCMTotal: number[] = [];
+    const pexesoCCMPlayedGames: number[] = [];
     for (let i=0; i< dateList.length; i+=1) {
       sprintNewWords.push(currentData[dateList[i]].games.sprint.new);
       sprintGuess.push(currentData[dateList[i]].games.sprint.guess);
       sprintTotal.push(currentData[dateList[i]].games.sprint.total);
       sprintLearnedWords.push(currentData[dateList[i]].games.sprint.learn);
       sprintRow.push(currentData[dateList[i]].games.sprint.row);
-      // sprintPlayedGames.push(currentData[dateList[i]].games.sprint.total);
-      // sprintNewWords.push(Object.values(currentData)[i].games)
+      sprintPlayedGames.push(currentData[dateList[i]].games.sprint.gamescount);
+      audioChallengeNewWords.push(currentData[dateList[i]].games.audioChallenge.new);
+      audioChallengeGuess.push(currentData[dateList[i]].games.audioChallenge.guess);
+      audioChallengeTotal.push(currentData[dateList[i]].games.audioChallenge.total);
+      audioChallengeLearnedWords.push(currentData[dateList[i]].games.audioChallenge.learn);
+      audioChallengeRow.push(currentData[dateList[i]].games.audioChallenge.row);
+      audioChallengePlayedGames.push(currentData[dateList[i]].games.audioChallenge.gamescount);
+      pexesoOCMNewWords.push(currentData[dateList[i]].games.pexesoOCM.new);
+      pexesoOCMGuess.push(currentData[dateList[i]].games.pexesoOCM.guess);
+      pexesoOCMTotal.push(currentData[dateList[i]].games.pexesoOCM.total);
+      pexesoOCMLearnedWords.push(currentData[dateList[i]].games.pexesoOCM.learn);
+      pexesoOCMRow.push(currentData[dateList[i]].games.pexesoOCM.row);
+      pexesoOCMPlayedGames.push(currentData[dateList[i]].games.pexesoOCM.gamescount);
+      hangmanGuess.push(currentData[dateList[i]].games.hangman.guess);
+      hangmanTotal.push(currentData[dateList[i]].games.hangman.total);
+      hangmanPlayedGames.push(currentData[dateList[i]].games.hangman.gamescount);
+      pexesoCCMGuess.push(currentData[dateList[i]].games.pexesoCCM.guess);
+      pexesoCCMTotal.push(currentData[dateList[i]].games.pexesoCCM.total);
+      pexesoCCMPlayedGames.push(currentData[dateList[i]].games.pexesoCCM.gamescount);
     }
     const parameters = {'dateList': dateList, 'sprintNewWords': sprintNewWords, 'sprintGuess': sprintGuess,
-       'sprintTotal': sprintTotal, 'sprintLearnedWords': sprintLearnedWords, 'sprintRow': sprintRow};
+       'sprintTotal': sprintTotal, 'sprintLearnedWords': sprintLearnedWords, 'sprintRow': sprintRow, 'sprintPlayedGames': sprintPlayedGames,
+       'audioChallengeNewWords': audioChallengeNewWords, 'audioChallengeGuess': audioChallengeGuess, 'audioChallengeTotal': audioChallengeTotal, 
+       'audioChallengeLearnedWords': audioChallengeLearnedWords, 'audioChallengeRow': audioChallengeRow, 'audioChallengePlayedGames': audioChallengePlayedGames,
+       'pexesoOCMNewWords': pexesoOCMNewWords, 'pexesoOCMGuess': pexesoOCMGuess,
+       'pexesoOCMTotal': pexesoOCMTotal, 'pexesoOCMLearnedWords': pexesoOCMLearnedWords, 'pexesoOCMRow': pexesoOCMRow, 'pexesoOCMPlayedGames': pexesoOCMPlayedGames,
+       'pexesoCCMGuess': pexesoCCMGuess, 'pexesoCCMTotal': pexesoCCMTotal, 'pexesoCCMPlayedGames': pexesoCCMPlayedGames,
+       'hangmanGuess': hangmanGuess, 'hangmanTotal': hangmanTotal, 'hangmanPlayedGames': hangmanPlayedGames};
     // (document.getElementById('all_time_statistics_container') as HTMLElement).innerHTML += await Drawer.drawComponent(Graph, parameters);
     const graph = new Graph(parameters);
-    const render = await graph.render();
+    const game_type = (document.getElementById('stat-level') as HTMLSelectElement).value;
+    const stat_type = (document.getElementById('stat-type') as HTMLSelectElement).value;
+    const render = await graph.render(game_type, stat_type);
     console.log(render);
-    (document.getElementById('all_time_statistics_container') as HTMLElement).append();
+    // (document.getElementById('all_time_statistics_container') as HTMLElement).append();
+  }
+
+  public moveToAllTimeStat():void {
+    const statTodayButton = document.getElementById('stat-button-today') as HTMLElement;
+    const statAllTimeButton = document.getElementById('stat-button-all-time') as HTMLElement;
+    const statTodayContainer = document.getElementById('today_statistics_container') as HTMLElement;
+    const statAllTimeContainer = document.getElementById('all_time_statistics_container') as HTMLElement;
+    statAllTimeButton.classList.remove('button_grey');
+    statAllTimeButton.classList.add('button');
+    statTodayButton.classList.add('button_grey');
+    statTodayButton.classList.remove('button');
+    statTodayContainer.setAttribute('style', 'display: none');
+    statAllTimeContainer.setAttribute('style', 'display: flex');
+  }
+
+  public moveToTodayStat():void {
+    const statTodayButton = document.getElementById('stat-button-today') as HTMLElement;
+    const statAllTimeButton = document.getElementById('stat-button-all-time') as HTMLElement;
+    const statTodayContainer = document.getElementById('today_statistics_container') as HTMLElement;
+    const statAllTimeContainer = document.getElementById('all_time_statistics_container') as HTMLElement;
+    statAllTimeButton.classList.add('button_grey');
+    statAllTimeButton.classList.remove('button');
+    statTodayButton.classList.remove('button_grey');
+    statTodayButton.classList.add('button');
+    statTodayContainer.setAttribute('style', 'display: flex');
+    statAllTimeContainer.setAttribute('style', 'display: none');
+  }
+
+  public updateStatType(): void {
+    const statLevel = document.getElementById('stat-level') as HTMLSelectElement;
+    const statType = document.getElementById('stat-type') as HTMLSelectElement;
+    if (Number(statLevel.value) > 2) {
+      statType.innerHTML = `<option value="0" selected>Games played</option>
+      <option value="2">Success rate</option>`
+    }  else {
+      statType.innerHTML = `<option value="0">Games played</option>
+      <option value="1">Words learned</option>
+      <option value="2">Success rate</option>
+      <option value="3">Correct in a row</option>
+      <option value="4">New words</option>`
+    }
   }
 
   public async after_render(): Promise<void> {
-
     setTimeout(()=> {
       const refreshButton = document.getElementById('stat-refresh') as HTMLElement;
-      console.log(refreshButton);
-      refreshButton.addEventListener('click', (e:MouseEvent)=> {
-        console.log('тест');
-        e.preventDefault();
-        this.drawGraph()})
+      const statTodayButton = document.getElementById('stat-button-today') as HTMLElement;
+      const statAllTimeButton = document.getElementById('stat-button-all-time') as HTMLElement;
+      const statLevel = document.getElementById('stat-level') as HTMLSelectElement;
+      refreshButton.addEventListener('click', ()=> {this.drawGraph()})
+      statTodayButton.addEventListener('click', this.moveToTodayStat);
+      statAllTimeButton.addEventListener('click', this.moveToAllTimeStat);
+      statLevel.addEventListener('blur', this.updateStatType);
     }, 1000);
     return;
   }

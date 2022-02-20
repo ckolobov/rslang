@@ -7,6 +7,11 @@
   justify-content: center;
 }
 
+.stat-container {
+  display: flex;
+  flex-direction: column;
+}
+
 .day-statistics-table {
   font-size: 17px;
   text-align: center;
