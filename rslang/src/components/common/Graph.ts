@@ -59,6 +59,11 @@ class Graph {
         axisYdata1 = this.options.audioChallengeLearnedWords||[];
         axisYdata2 = this.options.pexesoOCMLearnedWords||[];
       }
+      if (stat_type === '1.5') {
+        axisYdata = (this.options.sprintLearnedWords||[]).map((n,i,a)=>eval(a.slice(0,i+1).join('+')));
+        axisYdata1 = (this.options.audioChallengeLearnedWords||[]).map((n,i,a)=>eval(a.slice(0,i+1).join('+')));
+        axisYdata2 = (this.options.pexesoOCMLearnedWords||[]).map((n,i,a)=>eval(a.slice(0,i+1).join('+')));
+      }
       if (stat_type === '2') {
         for (let i=0; i<(this.options.sprintTotal||[]).length; i+=1) {
           axisYdata[i]=(100 * (this.options.sprintGuess||[])[i]/(this.options.sprintTotal||[])[i])||0;
@@ -82,6 +87,7 @@ class Graph {
     if (game_type === '0') {
       if (stat_type === '0') axisYdata = this.options.sprintPlayedGames||[];
       if (stat_type === '1') axisYdata = this.options.sprintLearnedWords||[];
+      if (stat_type === '1.5') axisYdata = (this.options.sprintLearnedWords||[]).map((n,i,a)=>eval(a.slice(0,i+1).join('+')));
       if (stat_type === '2') {
         for (let i=0; i<(this.options.sprintTotal||[]).length; i+=1) {
           axisYdata[i]=(100 * (this.options.sprintGuess||[])[i]/(this.options.sprintTotal||[])[i])||0;
@@ -93,6 +99,7 @@ class Graph {
     if (game_type === '1') {
       if (stat_type === '0') axisYdata1 = this.options.audioChallengePlayedGames||[];
       if (stat_type === '1') axisYdata1 = this.options.audioChallengeLearnedWords||[];
+      if (stat_type === '1.5') axisYdata1 = (this.options.audioChallengeLearnedWords||[]).map((n,i,a)=>eval(a.slice(0,i+1).join('+')));
       if (stat_type === '2') {
         for (let i=0; i<(this.options.audioChallengeTotal||[]).length; i+=1) {
           axisYdata1[i]=(100 * (this.options.audioChallengeGuess||[])[i]/(this.options.audioChallengeTotal||[])[i])||0;
@@ -104,6 +111,7 @@ class Graph {
     if (game_type === '2') {
       if (stat_type === '0') axisYdata2 = this.options.pexesoOCMPlayedGames||[];
       if (stat_type === '1') axisYdata2 = this.options.pexesoOCMLearnedWords||[];
+      if (stat_type === '1.5') axisYdata2 = (this.options.pexesoOCMLearnedWords||[]).map((n,i,a)=>eval(a.slice(0,i+1).join('+')));
       if (stat_type === '2') {
         for (let i=0; i<(this.options.pexesoOCMTotal||[]).length; i+=1) {
           axisYdata2[i]=(100 * (this.options.pexesoOCMGuess||[])[i]/(this.options.pexesoOCMTotal||[])[i])||0;

@@ -45,6 +45,7 @@ class Statistics implements Page {
           <select class="stat-setting-select" id="stat-type">
             <option value="0" selected>Games played</option>
             <option value="1">Words learned</option>
+            <option value="1.5">Words learned (summary)</option>
             <option value="2">Success rate</option>
             <option value="3">Correct in a row</option>
             <option value="4">New words</option>
@@ -292,11 +293,16 @@ class Statistics implements Page {
       statType.innerHTML = `<option value="0" selected>Games played</option>
       <option value="2">Success rate</option>`
     }  else {
+      const previousType = statType.value;
       statType.innerHTML = `<option value="0">Games played</option>
       <option value="1">Words learned</option>
+      <option value="1.5">Words learned (summary)</option>
       <option value="2">Success rate</option>
       <option value="3">Correct in a row</option>
       <option value="4">New words</option>`
+      for (let i = 0; i < statType.length; i++) {
+        if ((statType[i] as HTMLOptionElement).value === previousType) (statType[i] as HTMLOptionElement).selected = true;
+    }
     }
   }
 
