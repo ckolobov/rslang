@@ -60,7 +60,6 @@ class Statistics implements Page {
       </div>
       <div class="stat-refresh button" id="stat-refresh">Refresh</div>
     </div>`;
-    console.log(Statistics.data[date].games.pexesoOCM.gamescount);
     const statisticsDay = `
     <div class="stat-container" id="today_statistics_container">
       <h1>Statistics for today</h1>
@@ -101,7 +100,7 @@ class Statistics implements Page {
             <td><div>${Statistics.data[date].games.pexesoOCM.learn}</div></td>
           </tr>
           <tr>
-            <td><div >Pexeso (close mode)</div></td>
+            <td><div >Pexeso (close mode)*</div></td>
             <td><div>${Statistics.data[date].games.pexesoCCM.gamescount}</div></td>
             <td><div> - </div></td>
             <td><div>${pexesoCCMAccuracy}</div></td>
@@ -109,7 +108,7 @@ class Statistics implements Page {
             <td><div> - </div></td>
           </tr>
           <tr>
-            <td><div >Pexeso (close mode)</div></td>
+            <td><div >Hangman*</div></td>
             <td><div>${Statistics.data[date].games.hangman.gamescount}</div></td>
             <td><div> - </div></td>
             <td><div>${hangmanAccuracy}</div></td>
@@ -117,8 +116,16 @@ class Statistics implements Page {
             <td><div> - </div></td>
           </tr>
           <tr>
+            <td><div >Textbook</div></td>
+            <td><div> - </div></td>
+            <td><div> - </div></td>
+            <td><div> - </div></td>
+            <td><div> - </div></td>
+            <td><div> ${Statistics.data[date].textbookLearn} </div></td>
+          </tr>
+          <tr>
             <td><div>Total</div></td>
-            <td><div>${total.gamescount}</div></td>
+            <td><div>${total.gamescount + Statistics.data[date].games.pexesoCCM.gamescount + Statistics.data[date].games.hangman.gamescount}</div></td>
             <td><div>${total.new}</div></td>
             <td><div>${totalAccuracy}</div></td>
             <td><div>${Math.max(Statistics.data[date].games.audioChallenge.row, Statistics.data[date].games.sprint.row)}</div></td>
@@ -126,6 +133,7 @@ class Statistics implements Page {
           </tr>
         </tbody>
       </table>
+      <p>* Do not count in total Accuracy</p>
     </div>
     `;
     const view = `
@@ -208,7 +216,6 @@ class Statistics implements Page {
         await Statistics.saveStatistics();
       }
     }
-    console.log('Update Statistics');
   }
 
   static addDayToStatistics(date: string) {
@@ -285,13 +292,10 @@ class Statistics implements Page {
        'pexesoOCMTotal': pexesoOCMTotal, 'pexesoOCMLearnedWords': pexesoOCMLearnedWords, 'pexesoOCMRow': pexesoOCMRow, 'pexesoOCMPlayedGames': pexesoOCMPlayedGames,
        'pexesoCCMGuess': pexesoCCMGuess, 'pexesoCCMTotal': pexesoCCMTotal, 'pexesoCCMPlayedGames': pexesoCCMPlayedGames,
        'hangmanGuess': hangmanGuess, 'hangmanTotal': hangmanTotal, 'hangmanPlayedGames': hangmanPlayedGames};
-    // (document.getElementById('all_time_statistics_container') as HTMLElement).innerHTML += await Drawer.drawComponent(Graph, parameters);
     const graph = new Graph(parameters);
     const game_type = (document.getElementById('stat-level') as HTMLSelectElement).value;
     const stat_type = (document.getElementById('stat-type') as HTMLSelectElement).value;
-    const render = await graph.render(game_type, stat_type);
-    console.log(render);
-    // (document.getElementById('all_time_statistics_container') as HTMLElement).append();
+    await graph.render(game_type, stat_type);
   }
 
   public moveToAllTimeStat():void {

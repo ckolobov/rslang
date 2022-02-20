@@ -47,7 +47,6 @@ class Textbook implements Page {
           let total_wrong_pexesoOCM: number;
           try {
             const ans = await Request.getWordFromUserWordsList(currentId, currentToken, res[i].id);
-            console.log(ans);
             wordDiff = Number(ans.difficulty);
             total_correct_sprint = Number(ans.optional.correctTotalSprint);
             total_wrong_sprint = Number(ans.optional.wrongTotalSprint);

@@ -27,7 +27,7 @@ th,
 td:first-child {
   background: #afcde7;
   div {
-    padding: 2rem 4rem;
+    padding: 1rem 4rem;
   }
 }
 
@@ -47,6 +47,6 @@ td:first-child {
   text-align: left;
 }
 
-tr:nth-child(5n) td {
+tr:nth-child(6n) td {
   border-bottom-color: $color-dark;
 }
