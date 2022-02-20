@@ -2,7 +2,6 @@ import Page from './Page';
 import '../../scss/layout/_statistics.scss';
 import Request from '../../services/Request/Requests';
 import Authorization from '../../services/Authorization';
-import Drawer from '../drawer/Drawer';
 import Graph from '../common/Graph';
 import * as d3 from 'd3';
 
@@ -44,6 +43,8 @@ class Statistics implements Page {
             <option value="2">Pexeso (open card mode)</option>
             <option value="3">Hangman</option>
             <option value="4">Pexeso (close card mode)</option>
+            <option value="5">Textbook</option>
+            <option value="1.9">Total</option>
           </select>
         </div>
         <div class="stat-setting-item">
@@ -258,6 +259,7 @@ class Statistics implements Page {
     const pexesoCCMGuess: number[] = [];
     const pexesoCCMTotal: number[] = [];
     const pexesoCCMPlayedGames: number[] = [];
+    const textbookLearnedWords: number[] = [];
     for (let i=0; i< dateList.length; i+=1) {
       sprintNewWords.push(currentData[dateList[i]].games.sprint.new);
       sprintGuess.push(currentData[dateList[i]].games.sprint.guess);
@@ -283,6 +285,7 @@ class Statistics implements Page {
       pexesoCCMGuess.push(currentData[dateList[i]].games.pexesoCCM.guess);
       pexesoCCMTotal.push(currentData[dateList[i]].games.pexesoCCM.total);
       pexesoCCMPlayedGames.push(currentData[dateList[i]].games.pexesoCCM.gamescount);
+      textbookLearnedWords.push(currentData[dateList[i]].textbookLearn);
     }
     const parameters = {'dateList': dateList, 'sprintNewWords': sprintNewWords, 'sprintGuess': sprintGuess,
        'sprintTotal': sprintTotal, 'sprintLearnedWords': sprintLearnedWords, 'sprintRow': sprintRow, 'sprintPlayedGames': sprintPlayedGames,
@@ -291,7 +294,8 @@ class Statistics implements Page {
        'pexesoOCMNewWords': pexesoOCMNewWords, 'pexesoOCMGuess': pexesoOCMGuess,
        'pexesoOCMTotal': pexesoOCMTotal, 'pexesoOCMLearnedWords': pexesoOCMLearnedWords, 'pexesoOCMRow': pexesoOCMRow, 'pexesoOCMPlayedGames': pexesoOCMPlayedGames,
        'pexesoCCMGuess': pexesoCCMGuess, 'pexesoCCMTotal': pexesoCCMTotal, 'pexesoCCMPlayedGames': pexesoCCMPlayedGames,
-       'hangmanGuess': hangmanGuess, 'hangmanTotal': hangmanTotal, 'hangmanPlayedGames': hangmanPlayedGames};
+       'hangmanGuess': hangmanGuess, 'hangmanTotal': hangmanTotal, 'hangmanPlayedGames': hangmanPlayedGames, 'textbookLearnedWords': textbookLearnedWords
+    };
     const graph = new Graph(parameters);
     const game_type = (document.getElementById('stat-level') as HTMLSelectElement).value;
     const stat_type = (document.getElementById('stat-type') as HTMLSelectElement).value;
@@ -327,10 +331,13 @@ class Statistics implements Page {
   public updateStatType(): void {
     const statLevel = document.getElementById('stat-level') as HTMLSelectElement;
     const statType = document.getElementById('stat-type') as HTMLSelectElement;
-    if (Number(statLevel.value) > 2) {
+    if (Number(statLevel.value) > 2 && Number(statLevel.value) < 5) {
       statType.innerHTML = `<option value="0" selected>Games played</option>
       <option value="2">Success rate</option>`
-    }  else {
+    } else if (Number(statLevel.value) === 5) {
+      statType.innerHTML = `<option value="1" selected>Words learned</option>
+      <option value="1.5">Words learned (summary)</option>`
+    } else {
       const previousType = statType.value;
       statType.innerHTML = `<option value="0">Games played</option>
       <option value="1">Words learned</option>
