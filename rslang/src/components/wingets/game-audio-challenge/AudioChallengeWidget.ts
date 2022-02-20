@@ -5,7 +5,7 @@ import AudioChallengeFirstStep from './AudioChallengeFirstStep';
 import QuestionStepComponents from '../game-sprint/QuestionStepComponent';
 import AudioChallengeQuestionStep from './AudioChallengeQuestionStep'
 import { Containers } from '../GameWidget';
-import Request from '../../../services/Requests';
+import Request from '../../../services/Request/Requests';
 import GameResultStep from '../GameResultStep';
 
 const enum AudioChallengeSteps {
@@ -128,6 +128,7 @@ class AudioChallengeWidget extends GameWidget {
     return Drawer.drawBlock(GameResultStep, this.container, {
       correct: this.countCorrect,
       wrong: this.countWrong,
+      game: 'audioChallenge',
       playerResult: this.playerResult,
     });
   }

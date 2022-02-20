@@ -99,7 +99,6 @@ class AudioChallengeQuestionStep implements Component {
   }
 
   private onNextBtnClick() {
-    console.log('1')
     this.isClickable = false;
     this.showRightAnswer();
   }
