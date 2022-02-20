@@ -26,7 +26,6 @@ h1 {
 th,
 td:first-child {
   background: #afcde7;
-  color: $color-light;
   div {
     padding: 2rem 4rem;
   }
@@ -48,6 +47,6 @@ td:first-child {
   text-align: left;
 }
 
-tr:nth-child(2n) td {
+tr:nth-child(5n) td {
   border-bottom-color: $color-dark;
 }

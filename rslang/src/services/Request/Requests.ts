@@ -205,6 +205,9 @@ class Request {
     wrongTotalSprint: number,
     correctTotalAudioChallenge: number,
     wrongTotalAudioChallenge: number,
+    correctTotalPexesoOCM: number,
+    wrongTotalPexesoOCM: number,
+    wasInGame = false,
   ) {
     const rawResponse = await fetch(`${url}/users/${id}/words/${wordid}`, {
       method: 'POST',
@@ -221,6 +224,9 @@ class Request {
           wrongTotalSprint: `${wrongTotalSprint}`,
           correctTotalAudioChallenge: `${correctTotalAudioChallenge}`,
           wrongTotalAudioChallenge: `${wrongTotalAudioChallenge}`,
+          correctTotalPexesoOCM: `${correctTotalPexesoOCM}`,
+          wrongTotalPexesoOCM: `${wrongTotalPexesoOCM}`,
+          wasInGame: `${wasInGame}`,
         }
       }),
     });
@@ -285,7 +291,10 @@ class Request {
     correctTotalSprint: number,
     wrongTotalSprint: number,
     correctTotalAudioChallenge: number,
-    wrongTotalAudioChallenge: number,    
+    wrongTotalAudioChallenge: number,
+    correctTotalPexesoOCM: number,
+    wrongTotalPexesoOCM: number,
+    wasInGame = false,  
   ) {
     const rawResponse = await fetch(`${url}/users/${id}/words/${wordid}`, {
       method: 'PUT',
@@ -302,6 +311,9 @@ class Request {
           wrongTotalSprint: `${wrongTotalSprint}`,
           correctTotalAudioChallenge: `${correctTotalAudioChallenge}`,
           wrongTotalAudioChallenge: `${wrongTotalAudioChallenge}`,
+          correctTotalPexesoOCM: `${correctTotalPexesoOCM}`,
+          wrongTotalPexesoOCM: `${wrongTotalPexesoOCM}`,
+          wasInGame: `${wasInGame}`,
         },
       }),
     });

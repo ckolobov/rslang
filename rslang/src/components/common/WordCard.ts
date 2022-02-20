@@ -23,8 +23,8 @@ export interface Card {
   wrongSprint: number;
   correctAudioChallenge: number;
   wrongAudioChallenge: number;
-  correctPexeso: number;
-  wrongPexeso: number;
+  correctPexesoOCM: number;
+  wrongPexesoOCM: number;
   paginatedResults: Card[];
 }
 
@@ -52,6 +52,8 @@ class WordCard implements Component {
   private wrongSprint: number;
   private correctAudioChallenge: number;
   private wrongAudioChallenge: number;
+  private correctPexesoOCM: number;
+  private wrongPexesoOCM: number;
   private authorization: Authorization;
 
   public constructor(options: Card) {
@@ -72,6 +74,8 @@ class WordCard implements Component {
     this.wrongSprint = isNaN(options.wrongSprint) ? 0: options.wrongSprint;
     this.correctAudioChallenge = isNaN(options.correctAudioChallenge) ? 0: options.correctAudioChallenge;
     this.wrongAudioChallenge = isNaN(options.wrongAudioChallenge) ? 0: options.wrongAudioChallenge;
+    this.correctPexesoOCM = isNaN(options.correctPexesoOCM) ? 0: options.correctPexesoOCM;
+    this.wrongPexesoOCM = isNaN(options.wrongPexesoOCM) ? 0: options.wrongPexesoOCM;
     this.authorization = Authorization.getInstance();
   }
 
@@ -81,6 +85,7 @@ class WordCard implements Component {
     const currentGroup = Number(url.id) || (Number(url.id) === 0 ? 0 : 7);
     const Sprintrate = Math.round((this.correctSprint/(this.correctSprint+this.wrongSprint))*100)||0;
     const Audiorate = Math.round((this.correctAudioChallenge/(this.correctAudioChallenge+this.wrongAudioChallenge))*100)||0;
+    const PexesoOCMrate = Math.round((this.correctPexesoOCM/(this.correctPexesoOCM+this.wrongPexesoOCM))*100)||0;
     const popup = `
     <div class="popup_wrapper" style="display:none">
       <div class="close">X</div>
@@ -109,6 +114,20 @@ class WordCard implements Component {
           <circle class="track"  cx="150" cy="150" r="111.4" />
           <circle id="Circ_points" transform="rotate(-90 150 150)"  cx="150" cy="150" r="111.4" stroke-dasharray="${7*Audiorate}, ${7*(100-Audiorate)}"/>
           <text x="50%" y="165px" id="txt1"  text-anchor="middle" font-size="56px">${Audiorate}%</text>
+          </svg>
+        </div>
+      </div>
+      <p class="game-type">Pexeso (open card mode)</p>
+      <div class="audio-challenge-game-info">
+        <div class="game-result-box">
+          <p class="game-result">Correct: ${this.correctPexesoOCM}</p>
+          <p class="game-result">Wrong: ${this.wrongPexesoOCM}</p>
+        </div>
+        <div class="diagramm">
+          <svg viewBox="0 0 300 300" >
+          <circle class="track"  cx="150" cy="150" r="111.4" />
+          <circle id="Circ_points" transform="rotate(-90 150 150)"  cx="150" cy="150" r="111.4" stroke-dasharray="${7*PexesoOCMrate}, ${7*(100-PexesoOCMrate)}"/>
+          <text x="50%" y="165px" id="txt1"  text-anchor="middle" font-size="56px">${PexesoOCMrate}%</text>
           </svg>
         </div>
       </div>
@@ -179,7 +198,8 @@ class WordCard implements Component {
       await Request.editWordInUserWordsList(
         currentId, currentToken, card.id, Difficulty.HARD, 
         word.optional.correctInRow, word.optional.correctTotalSprint, 
-        word.optional.wrongTotalSprint, word.optional.correctTotalAudioChallenge, word.optional.wrongTotalAudioChallenge);
+        word.optional.wrongTotalSprint, word.optional.correctTotalAudioChallenge, word.optional.wrongTotalAudioChallenge, 
+        word.optional.correctTotalPexesoOCM, word.optional.wrongTotalPexesoOCM, word.optional.wasInGame);
       localStorage.setItem('rslang-current-page-total-difficulty', `${total_diff + 1}`);
       if(total_diff-1 !== 0) {
         (document.querySelectorAll('.game__button') as NodeListOf<HTMLElement>).forEach((el)=>el.setAttribute('style', 'pointer-events:""'));
@@ -191,9 +211,9 @@ class WordCard implements Component {
       (parent.children[2] as HTMLElement).setAttribute("style","pointer-events:''");
       const word = await Request.getWordFromUserWordsList(currentId, currentToken, card.id);
       await Request.editWordInUserWordsList(
-        currentId, currentToken, card.id, Difficulty.NORMAL, 
-        word.optional.correctInRow, word.optional.correctTotalSprint, 
-        word.optional.wrongTotalSprint, word.optional.correctTotalAudioChallenge, word.optional.wrongTotalAudioChallenge);
+        currentId, currentToken, card.id, Difficulty.NORMAL,word.optional.correctInRow, word.optional.correctTotalSprint, 
+        word.optional.wrongTotalSprint, word.optional.correctTotalAudioChallenge, word.optional.wrongTotalAudioChallenge, 
+        word.optional.correctTotalPexesoOCM, word.optional.wrongTotalPexesoOCM, word.optional.wasInGame);
       localStorage.setItem('rslang-current-page-total-difficulty', `${total_diff - 1}`);
       if(total_diff-1 === 0) {
         (document.querySelectorAll('.game__button') as NodeListOf<HTMLElement>).forEach((el)=>el.setAttribute('style', 'pointer-events:none'));
@@ -222,9 +242,10 @@ class WordCard implements Component {
       (parent.children[0] as HTMLElement).setAttribute("style","pointer-events:none");
       const word = await Request.getWordFromUserWordsList(currentId, currentToken, card.id);
       await Request.editWordInUserWordsList(
-        currentId, currentToken, card.id, Difficulty.LEARNED, 
+        currentId, currentToken, card.id, Difficulty.LEARNED,
         word.optional.correctInRow, word.optional.correctTotalSprint, 
-        word.optional.wrongTotalSprint, word.optional.correctTotalAudioChallenge, word.optional.wrongTotalAudioChallenge);
+        word.optional.wrongTotalSprint, word.optional.correctTotalAudioChallenge, word.optional.wrongTotalAudioChallenge, 
+        word.optional.correctTotalPexesoOCM, word.optional.wrongTotalPexesoOCM, word.optional.wasInGame);
       await Statistics.updateStatistics();
       Statistics.learnedWords += 1;
       Statistics.data[date].textbookLearn  += 1;
@@ -240,9 +261,10 @@ class WordCard implements Component {
       (parent.children[0] as HTMLElement).setAttribute("style","pointer-events:''");
       const word = await Request.getWordFromUserWordsList(currentId, currentToken, card.id);
       await Request.editWordInUserWordsList(
-        currentId, currentToken, card.id, Difficulty.NORMAL, 
+        currentId, currentToken, card.id, Difficulty.NORMAL,
         word.optional.correctInRow, word.optional.correctTotalSprint, 
-        word.optional.wrongTotalSprint, word.optional.correctTotalAudioChallenge, word.optional.wrongTotalAudioChallenge);
+        word.optional.wrongTotalSprint, word.optional.correctTotalAudioChallenge, word.optional.wrongTotalAudioChallenge, 
+        word.optional.correctTotalPexesoOCM, word.optional.wrongTotalPexesoOCM, word.optional.wasInGame);
       await Statistics.updateStatistics();
       Statistics.learnedWords -= 1;
       Statistics.data[date].textbookLearn  -= 1;

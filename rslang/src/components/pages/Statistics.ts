@@ -19,9 +19,15 @@ class Statistics implements Page {
     '0%' : ((Statistics.data[date].games.sprint.guess * 100) / Statistics.data[date].games.sprint.total).toFixed(1) + '%';
     const audioChallengeAccuracy = Number(Statistics.data[date].games.audioChallenge.total) === 0 ?
     '0%': ((Statistics.data[date].games.audioChallenge.guess * 100) / Statistics.data[date].games.audioChallenge.total).toFixed(1) + '%';
+    const pexesoOCMAccuracy = Number(Statistics.data[date].games.pexesoOCM.total) === 0 ?
+    '0%' : ((Statistics.data[date].games.pexesoOCM.guess * 100) / Statistics.data[date].games.pexesoOCM.total).toFixed(1) + '%';
+    const pexesoCCMAccuracy = Number(Statistics.data[date].games.pexesoCCM.total) === 0 ?
+    '0%' : ((Statistics.data[date].games.pexesoCCM.guess * 100) / Statistics.data[date].games.pexesoCCM.total).toFixed(1) + '%';
+    const hangmanAccuracy = Number(Statistics.data[date].games.hangman.total) === 0 ?
+    '0%' : ((Statistics.data[date].games.hangman.guess * 100) / Statistics.data[date].games.hangman.total).toFixed(1) + '%';
     const total = { ...Statistics.data[date].games.sprint };
     for (const key in total) {
-      total[key] = Number(total[key]) + Number(Statistics.data[date].games.audioChallenge[key]);
+      total[key] = Number(total[key]) + Number(Statistics.data[date].games.audioChallenge[key]) + Number(Statistics.data[date].games.pexesoOCM[key]);
     }
     const totalAccuracy = total.total === 0 ? '0%' : ((total.guess * 100) / total.total).toFixed(1) + '%';
 
@@ -54,7 +60,7 @@ class Statistics implements Page {
       </div>
       <div class="stat-refresh button" id="stat-refresh">Refresh</div>
     </div>`;
-
+    console.log(Statistics.data[date].games.pexesoOCM.gamescount);
     const statisticsDay = `
     <div class="stat-container" id="today_statistics_container">
       <h1>Statistics for today</h1>
@@ -62,6 +68,7 @@ class Statistics implements Page {
         <thead class="day-statistics-table__head">
           <tr class="table-head">
             <th><div>Game</div></th>
+            <th><div>Total Games</div></th>
             <th><div>New words</div></th>
             <th><div>Accuracy</div></th>
             <th><div>In a row</div></th>
@@ -71,6 +78,7 @@ class Statistics implements Page {
         <tbody class="table-body">
           <tr>
             <td><div>Sprint</div></td>
+            <td><div>${Statistics.data[date].games.sprint.gamescount}</div></td>
             <td><div>${Statistics.data[date].games.sprint.new}</div></td>
             <td><div>${sprintAccuracy}</div></td>
             <td><div>${Statistics.data[date].games.sprint.row}</div></td>
@@ -78,13 +86,39 @@ class Statistics implements Page {
           </tr>
           <tr>
             <td><div >Audio Challenge</div></td>
+            <td><div>${Statistics.data[date].games.audioChallenge.gamescount}</div></td>
             <td><div>${Statistics.data[date].games.audioChallenge.new}</div></td>
             <td><div>${audioChallengeAccuracy}</div></td>
             <td><div>${Statistics.data[date].games.audioChallenge.row}</div></td>
             <td><div>${Statistics.data[date].games.audioChallenge.learn}</div></td>
           </tr>
           <tr>
+            <td><div >Pexeso (open mode)</div></td>
+            <td><div>${Statistics.data[date].games.pexesoOCM.gamescount}</div></td>
+            <td><div>${Statistics.data[date].games.pexesoOCM.new}</div></td>
+            <td><div>${pexesoOCMAccuracy}</div></td>
+            <td><div>${Statistics.data[date].games.pexesoOCM.row}</div></td>
+            <td><div>${Statistics.data[date].games.pexesoOCM.learn}</div></td>
+          </tr>
+          <tr>
+            <td><div >Pexeso (close mode)</div></td>
+            <td><div>${Statistics.data[date].games.pexesoCCM.gamescount}</div></td>
+            <td><div> - </div></td>
+            <td><div>${pexesoCCMAccuracy}</div></td>
+            <td><div> - </div></td>
+            <td><div> - </div></td>
+          </tr>
+          <tr>
+            <td><div >Pexeso (close mode)</div></td>
+            <td><div>${Statistics.data[date].games.hangman.gamescount}</div></td>
+            <td><div> - </div></td>
+            <td><div>${hangmanAccuracy}</div></td>
+            <td><div> - </div></td>
+            <td><div> - </div></td>
+          </tr>
+          <tr>
             <td><div>Total</div></td>
+            <td><div>${total.gamescount}</div></td>
             <td><div>${total.new}</div></td>
             <td><div>${totalAccuracy}</div></td>
             <td><div>${Math.max(Statistics.data[date].games.audioChallenge.row, Statistics.data[date].games.sprint.row)}</div></td>
