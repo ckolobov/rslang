@@ -4,7 +4,7 @@ import Drawer from '../drawer/Drawer';
 import WordResult from './WordResult';
 import Statistics from '../pages/Statistics';
 import Authorization from '../../services/Authorization';
-import Request from '../../services/Request/Requests';
+import Request, { Difficulty } from '../../services/Request/Requests';
 
 interface GameResultStepOptions {
   correct: number;
@@ -12,6 +12,11 @@ interface GameResultStepOptions {
   game: string;
   playerResult: Array<[Word, boolean]>;
 }
+
+const wordIsLearned = {
+  hard: 5,
+  normal: 3,
+};
 
 class GameResultStep implements Component {
   private options: GameResultStepOptions;
@@ -55,28 +60,19 @@ class GameResultStep implements Component {
   private async updateGameStatistics() {
     await Statistics.updateStatistics();
     const date = Statistics.getDate();
-    console.log(Statistics.data[date]);
-    Statistics.data[date].games[this.options.game].guess +=
-      this.options.correct;
+    Statistics.data[date].games[this.options.game].guess += this.options.correct;
     Statistics.data[date].games[this.options.game].learn += this.learnCount;
     Statistics.data[date].games[this.options.game].new += this.newCount;
-    Statistics.data[date].games[this.options.game].total +=
-      this.options.playerResult.length;
+    Statistics.data[date].games[this.options.game].total += this.options.playerResult.length;
     let count = 1;
-    if (
-      Statistics.data[date].games[this.options.game].row == 0 &&
-      this.options.correct > 0
-    ) {
+    if (Statistics.data[date].games[this.options.game].row == 0 && this.options.correct > 0) {
       Statistics.data[date].games[this.options.game].row = count;
     }
     for (let i = 0; i < this.options.playerResult.length - 1; i++) {
-      if (
-        this.options.playerResult[i][1] &&
-        this.options.playerResult[i + 1][1]
-      ) {
-        count++;
-        if (Statistics.data[date].game[this.options.game].row < count) {
-          Statistics.data[date].game[this.options.game].row = count;
+      if ( this.options.playerResult[i][1] && this.options.playerResult[i + 1][1]) {
+        count += 1;
+        if (Statistics.data[date].games[this.options.game].row < count) {
+          Statistics.data[date].games[this.options.game].row = count;
         }
       } else {
         count = 1;
@@ -93,33 +89,33 @@ class GameResultStep implements Component {
     let total_wrong_audioChallenge = 0;
 
     for (let i = 0; i < this.options.playerResult.length; i++) {
-      const res = await Request.getWordById(this.options.playerResult[i][0].id);
-      console.log(res);
-      console.log(token);
       try {
         const ans = await Request.getWordFromUserWordsList(
           id,
           token,
           this.options.playerResult[i][0].id
         );
-        if (this.options.playerResult[i][1] && Number(ans.difficulty) > 0) {
-          wordDiff = Number(ans.difficulty) - 1;
-        } else {
-          if (!this.options.playerResult[i][1] && Number(ans.difficulty) < 2) {
-            wordDiff = Number(ans.difficulty) + 1;
-            if (wordDiff === 2) {
-              this.learnCount += 1;
-            }
-          } else {
-            wordDiff = Number(ans.difficulty);
+
+        wordDiff = Number(ans.difficulty);
+
+        if (this.options.playerResult[i][1]) {
+          correct_in_row = Number(ans.optional.correctInRow) + 1;
+          if ((wordDiff === Number(Difficulty.HARD) && wordIsLearned.hard <= correct_in_row) || (wordDiff === Number(Difficulty.NORMAL) && wordIsLearned.normal <= correct_in_row)) {
+            wordDiff = Number(Difficulty.LEARNED);
+            correct_in_row = 0;
+            this.learnCount += 1;
+            console.log('learn');
           }
+        } else if (!this.options.playerResult[i][1]) {
+          if (wordDiff === Number(Difficulty.LEARNED)) {
+            this.learnCount -= 1;
+          }
+          wordDiff = Number(Difficulty.HARD);
+          correct_in_row = 0;
         }
-        correct_in_row = this.options.playerResult[i][1] ? Number(ans.correctInRow) + 1 : 0;
 
         if (this.options.game === 'sprint') {
-          total_correct_audioChallenge = Number(
-            ans.optional.correctTotalAudioChallenge
-          );
+          total_correct_audioChallenge = Number(ans.optional.correctTotalAudioChallenge);
           total_wrong_audioChallenge = Number(ans.optional.wrongTotalAudioChallenge);
           if (this.options.playerResult[i][1]) {
             total_correct_sprint = Number(ans.optional.correctTotalSprint) + 1;
@@ -134,35 +130,36 @@ class GameResultStep implements Component {
           total_correct_sprint = Number(ans.optional.correctTotalSprint);
           total_wrong_sprint = Number(ans.optional.wrongTotalSprint);
           if (this.options.playerResult[i][1]) {
-            total_correct_audioChallenge =
-              Number(ans.optional.correctTotalAudioChallenge) + 1;
+            total_correct_audioChallenge = Number(ans.optional.correctTotalAudioChallenge) + 1;
             total_wrong_audioChallenge = Number(ans.optional.wrongTotalAudioChallenge);
           } else {
             total_correct_audioChallenge = Number(ans.optional.correctTotalAudioChallenge);
             total_wrong_audioChallenge = Number(ans.optional.wrongTotalAudioChallenge) + 1;
           }
         }
-        if (!ans.wasInGame) {
+
+        if (!Number(ans.optional.wasInGame)) {
           this.newCount += 1;
+          console.log('new');
         }
+
         await Request.editWordInUserWordsList(
           id,
           token,
-          this.options.playerResult[1][0].id,
+          this.options.playerResult[i][0].id,
           wordDiff,
           correct_in_row,
           total_correct_sprint,
           total_wrong_sprint,
           total_correct_audioChallenge,
           total_wrong_audioChallenge,
-          true
+          1
         );
       } catch {
-        wordDiff = this.options.playerResult[i][1] ? 0 : 2;
-        if (this.options.playerResult[i][1]) {
-          this.learnCount += 1;
-        }
-        correct_in_row = 1;
+        wordDiff = 1;
+        correct_in_row = this.options.playerResult[i][1] ? 1 : 0;
+        this.newCount += 1;
+
         if (this.options.game === 'sprint') {
           total_correct_sprint = this.options.playerResult[i][1] ? 1 : 0;
           total_wrong_sprint = this.options.playerResult[i][1] ? 0 : 1;
@@ -177,28 +174,24 @@ class GameResultStep implements Component {
           total_wrong_sprint = 0;
         }
 
-        this.newCount += 1;
-        
         await Request.SetWordInUsersList(
           id,
           token,
-          this.options.playerResult[1][0].id,
+          this.options.playerResult[i][0].id,
           wordDiff,
           correct_in_row,
           total_correct_sprint,
           total_wrong_sprint,
           total_correct_audioChallenge,
           total_wrong_audioChallenge,
-          true
+          1
         );
       }
     }
   }
 
   public async after_render(): Promise<void> {
-    const container = document.querySelector(
-      '.results-container'
-    ) as HTMLElement;
+    const container = document.querySelector('.results-container') as HTMLElement;
     container.addEventListener('click', this.playAudio.bind(this));
     if (this.authorization.isAuthorized()) {
       await this.uppdateWordProgress(
@@ -206,6 +199,7 @@ class GameResultStep implements Component {
         this.authorization.getUserInfo().token
       );
       await this.updateGameStatistics();
+      await Statistics.saveStatistics();
       console.log('Statistics saved');
     }
   }

@@ -104,6 +104,7 @@ class Statistics implements Page {
       const date = Statistics.date;
       if (Statistics.data == undefined) {
         Statistics.data = {};
+        Statistics.learnedWords = 0;
         await Statistics.saveStatistics();
       }
       if (Statistics.data[date] == undefined) {
@@ -122,7 +123,8 @@ class Statistics implements Page {
     await Request.editStatistics(
       userInfo.id,
       userInfo.token,
-      Statistics.data
+      Statistics.data, 
+      Statistics.learnedWords,
     );
   }
 
