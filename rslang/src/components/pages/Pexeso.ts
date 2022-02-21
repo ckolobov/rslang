@@ -130,9 +130,9 @@ class Pexeso implements Page {
             if((Number(res.difficulty) !== 0) && (diff === Difficulty.LEARNED)) this.learned += 1;
             const correct = Number(res.optional.correctTotalPexesoOCM) + 1;
             if (!res.optional.wasInGame) this.wordsNew += 1;
-            await Request.editWordInUserWordsList(currentId, currentToken, wordId, diff, Number(res.optional.correctInRow) + 1, res.optional.correctTotalSprint, res.optional.wrongTotalSprint, res.optional.correctTotalAudioChallenge, res.optional.wrongTotalAudioChallenge, correct, res.optional.wrongTotalPexesoOCM, true);
+            await Request.editWordInUserWordsList(currentId, currentToken, wordId, diff, Number(res.optional.correctInRow) + 1, res.optional.correctTotalSprint, res.optional.wrongTotalSprint, res.optional.correctTotalAudioChallenge, res.optional.wrongTotalAudioChallenge, correct, res.optional.wrongTotalPexesoOCM, 1);
           } else {
-            await Request.SetWordInUsersList(currentId, currentToken, wordId, Difficulty.NORMAL, 1, 0, 0, 0, 0, 1, 0, true);
+            await Request.SetWordInUsersList(currentId, currentToken, wordId, Difficulty.NORMAL, 1, 0, 0, 0, 0, 1, 0, 1);
             this.wordsNew += 1;
           }
         }
@@ -149,19 +149,19 @@ class Pexeso implements Page {
           if(!res1.error) {
             if (!res1.optional.wasInGame) this.wordsNew += 1;
             if (Number(res1.difficulty) === Difficulty.LEARNED) this.learned -=1;
-            await Request.editWordInUserWordsList(currentId, currentToken, wordId1, Difficulty.HARD, 0, res1.optional.correctTotalSprint, res1.optional.wrongTotalSprint, res1.optional.correctTotalAudioChallenge, res1.optional.wrongTotalAudioChallenge, res1.optional.correctTotalPexesoOCM, Number(res1.optional.wrongTotalPexesoOCM) + 1, true);
+            await Request.editWordInUserWordsList(currentId, currentToken, wordId1, Difficulty.HARD, 0, res1.optional.correctTotalSprint, res1.optional.wrongTotalSprint, res1.optional.correctTotalAudioChallenge, res1.optional.wrongTotalAudioChallenge, res1.optional.correctTotalPexesoOCM, Number(res1.optional.wrongTotalPexesoOCM) + 1, 1);
           } else {
             this.wordsNew += 1;
-            await Request.SetWordInUsersList(currentId, currentToken, wordId1, Difficulty.HARD, 0, 0, 0, 0, 0, 0, 1, true);
+            await Request.SetWordInUsersList(currentId, currentToken, wordId1, Difficulty.HARD, 0, 0, 0, 0, 0, 0, 1, 1);
           }
           const res2 = await Request.getWordFromUserWordsList(currentId, currentToken, wordId2);
           if(!res2.error) {
             if (!res2.optional.wasInGame) this.wordsNew += 1;
             if (Number(res2.difficulty) === Difficulty.LEARNED) this.learned -=1;
-            await Request.editWordInUserWordsList(currentId, currentToken, wordId2, Difficulty.HARD, 0, res2.optional.correctTotalSprint, res2.optional.wrongTotalSprint, res2.optional.correctTotalAudioChallenge, res2.optional.wrongTotalAudioChallenge, res2.optional.correctTotalPexesoOCM, Number(res2.optional.wrongTotalPexesoOCM) + 1, true);
+            await Request.editWordInUserWordsList(currentId, currentToken, wordId2, Difficulty.HARD, 0, res2.optional.correctTotalSprint, res2.optional.wrongTotalSprint, res2.optional.correctTotalAudioChallenge, res2.optional.wrongTotalAudioChallenge, res2.optional.correctTotalPexesoOCM, Number(res2.optional.wrongTotalPexesoOCM) + 1, 1);
           } else {
             this.wordsNew += 1;
-            await Request.SetWordInUsersList(currentId, currentToken, wordId2, Difficulty.HARD, 0, 0, 0, 0, 0, 0, 1, true);
+            await Request.SetWordInUsersList(currentId, currentToken, wordId2, Difficulty.HARD, 0, 0, 0, 0, 0, 0, 1, 1);
           }
         }
         setTimeout(()=>{card1.setAttribute('style','pointer-events: ""; background: grey')}, showTime);

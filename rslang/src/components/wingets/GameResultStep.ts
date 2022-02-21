@@ -87,6 +87,8 @@ class GameResultStep implements Component {
     let total_wrong_sprint = 0;
     let total_correct_audioChallenge = 0;
     let total_wrong_audioChallenge = 0;
+    let total_correct_pexesoOCM = 0;
+    let total_wrong_pexesoOCM = 0;
 
     for (let i = 0; i < this.options.playerResult.length; i++) {
       try {
@@ -97,14 +99,14 @@ class GameResultStep implements Component {
         );
 
         wordDiff = Number(ans.difficulty);
-
+        total_correct_pexesoOCM = Number(ans.optional.correctPexesoOCM);
+        total_wrong_pexesoOCM = Number(ans.optional.wrongPexesoOCM);
         if (this.options.playerResult[i][1]) {
           correct_in_row = Number(ans.optional.correctInRow) + 1;
           if ((wordDiff === Number(Difficulty.HARD) && wordIsLearned.hard <= correct_in_row) || (wordDiff === Number(Difficulty.NORMAL) && wordIsLearned.normal <= correct_in_row)) {
             wordDiff = Number(Difficulty.LEARNED);
             correct_in_row = 0;
             this.learnCount += 1;
-            console.log('learn');
           }
         } else if (!this.options.playerResult[i][1]) {
           if (wordDiff === Number(Difficulty.LEARNED)) {
@@ -140,7 +142,6 @@ class GameResultStep implements Component {
 
         if (!Number(ans.optional.wasInGame)) {
           this.newCount += 1;
-          console.log('new');
         }
 
         await Request.editWordInUserWordsList(
@@ -153,6 +154,8 @@ class GameResultStep implements Component {
           total_wrong_sprint,
           total_correct_audioChallenge,
           total_wrong_audioChallenge,
+          total_correct_pexesoOCM,
+          total_wrong_pexesoOCM,
           1
         );
       } catch {
@@ -184,6 +187,8 @@ class GameResultStep implements Component {
           total_wrong_sprint,
           total_correct_audioChallenge,
           total_wrong_audioChallenge,
+          total_correct_pexesoOCM,
+          total_wrong_pexesoOCM,
           1
         );
       }
@@ -200,7 +205,6 @@ class GameResultStep implements Component {
       );
       await this.updateGameStatistics();
       await Statistics.saveStatistics();
-      console.log('Statistics saved');
     }
   }
 }

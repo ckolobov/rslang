@@ -48,11 +48,11 @@
   }
 
   .select {
-    background-color: inherit;
-    color: $color-light;
+    color: black;
+    background-color: #8fd4e2;
+    opacity: 0.9;
     margin-bottom: 55px;
     padding: 0.75rem 2.5rem 0.75rem 1rem;
-    background: none;
     border: 1px solid $color-light;
     border-radius: $border-rounded;
 
@@ -90,10 +90,6 @@
   &.wrong-answer {
     background-color: $color-wrong;
   }
-}
-
-.select-language option {
-  background-color: $color-dark;
 }
 
 .results-count {

@@ -63,7 +63,7 @@ class Textbook implements Page {
             total_wrong_audioChallenge = 0;
             total_correct_pexesoOCM = 0;
             total_wrong_pexesoOCM = 0;
-            await Request.SetWordInUsersList(currentId, currentToken, res[i].id, Difficulty.NORMAL, 0, 0, 0, 0, 0, 0, 0, false);
+            await Request.SetWordInUsersList(currentId, currentToken, res[i].id, Difficulty.NORMAL, 0, 0, 0, 0, 0, 0, 0, 0);
             total_diff += wordDiff;
           }
           res[i].diff = wordDiff;
@@ -82,8 +82,8 @@ class Textbook implements Page {
     result = result
       ? result
       : logStatus === 'Log in'
-      ? '<span>Вы еще не авторизованы</span>'
-      : '<span>Вы еще не выбрали ни одного слова</span>';
+      ? '<h1>User words page is available only for authorized users<br><br>Страница слов пользователя доступна только после авторизации</h1>'
+      : '<h1>There are no difficult words in your list<br><br>В ваш список не добавлено ни одного сложного слова</h1>';
     const info = `
     <section class="level-info" style="background:red; color:black">
       <a href="/#/textbook/0/0" class="level-info-link">
