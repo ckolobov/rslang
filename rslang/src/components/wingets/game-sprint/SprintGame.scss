@@ -9,6 +9,16 @@
   border-radius: 10px;
   padding: 30px;
 
+  .level-select {
+    background-color: inherit;
+    color: $color-light;
+    margin-bottom: 55px;
+    padding: 0.75rem 2.5rem 0.75rem 1rem;
+    background: none;
+    border: 1px solid $color-light;
+    border-radius: $border-rounded;
+  }
+
   .results-count {
     display: flex;
 

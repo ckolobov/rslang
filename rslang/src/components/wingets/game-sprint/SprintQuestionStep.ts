@@ -1,12 +1,12 @@
 import Component from '../../common/Component';
 import Drawer from '../../drawer/Drawer';
 import Button from '../../common/Button';
-import { Scenario, Results } from './SprintWidget';
+import { QuestionScenario, Results } from './SprintWidget';
 
 interface SprintQuestionStepOptions {
   word: Word;
   translation: Word;
-  scenario: Scenario;
+  scenario: QuestionScenario;
   onConfirm(result: Results): void;
 }
 
@@ -18,6 +18,7 @@ const keyCodeMapping = {
 class SprintQuestionStep implements Component {
   private options: SprintQuestionStepOptions;
   private keyPressHandler = this.onKeyDown.bind(this);
+  private hashChangeHandler = this.onHashChange.bind(this);
 
   constructor(options: SprintQuestionStepOptions) {
     this.options = options;
@@ -54,7 +55,8 @@ class SprintQuestionStep implements Component {
       'sprint-question-buttons'
     ) as HTMLElement;
     buttonsBlock.addEventListener('click', (event) => this.onButtonClick(event));
-    document.addEventListener('keydown', this.keyPressHandler);
+    document.addEventListener('keydown', this.keyPressHandler, {once: true});
+    window.addEventListener('hashchange', this.hashChangeHandler, {once: true});
   }
 
   private onButtonClick(event: MouseEvent): void {
@@ -76,8 +78,13 @@ class SprintQuestionStep implements Component {
     }
   }
 
+  private onHashChange(): void {
+    document.removeEventListener('keydown', this.keyPressHandler);
+  }
+
   private onConfirm(result: boolean) {
     document.removeEventListener('keydown', this.keyPressHandler);
+    window.removeEventListener('hashchange', this.hashChangeHandler);
     this.options.onConfirm(Number(result));
   }
 }

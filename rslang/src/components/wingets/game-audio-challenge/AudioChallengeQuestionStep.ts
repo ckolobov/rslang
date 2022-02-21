@@ -28,6 +28,7 @@ class AudioChallengeQuestionStep implements Component {
   private isClickable = true;
   private keyPressHandler = this.onKeyDown.bind(this);
   private nextBtnPressHandler = this.onNextBtnClick.bind(this);
+  private hashChangeHandler = this.onHashChange.bind(this);
 
   constructor(options: AudioChallengeQuestionStepOptions) {
     this.options = options;
@@ -72,6 +73,7 @@ class AudioChallengeQuestionStep implements Component {
     const audioButton = document.querySelector('.audio-challenge-audio') as HTMLElement;
     audioButton.addEventListener('click', () => audio.play());
     document.addEventListener('keydown', this.keyPressHandler);
+    window.addEventListener('hashchange', this.hashChangeHandler, {once: true});
   }
 
   private showRightAnswer() {
@@ -93,9 +95,7 @@ class AudioChallengeQuestionStep implements Component {
       audioContainer.prepend(img);
     };
     this.options.onAnswer(this.result);
-    nextButton.addEventListener('click', () =>
-      this.options.onConfirm()
-    );
+    nextButton.addEventListener('click', () => this.onConfirm());
   }
 
   private onNextBtnClick() {
@@ -115,6 +115,7 @@ class AudioChallengeQuestionStep implements Component {
   }
 
   private onKeyDown(event: KeyboardEvent): void {
+    console.log('onKeyDown');
     const keyCode = event.code;
     if (!(keyCode in keyCodeMapping)) return;
     event.preventDefault();
@@ -133,10 +134,19 @@ class AudioChallengeQuestionStep implements Component {
         this.isClickable = false;
         this.showRightAnswer();
       } else if(nextButton.textContent === 'Далее') {
-        document.removeEventListener('keydown', this.keyPressHandler);
-        this.options.onConfirm();
+        this.onConfirm();
       }
     }
+  }
+
+  private onHashChange(): void {
+    document.removeEventListener('keydown', this.keyPressHandler);
+  }
+
+  private onConfirm() {
+    document.removeEventListener('keydown', this.keyPressHandler);
+    window.removeEventListener('hashchange', this.hashChangeHandler);
+    this.options.onConfirm();
   }
 }
 

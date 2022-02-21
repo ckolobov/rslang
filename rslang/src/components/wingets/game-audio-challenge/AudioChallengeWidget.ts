@@ -5,8 +5,11 @@ import AudioChallengeFirstStep from './AudioChallengeFirstStep';
 import QuestionStepComponents from '../game-sprint/QuestionStepComponent';
 import AudioChallengeQuestionStep from './AudioChallengeQuestionStep'
 import { Containers } from '../GameWidget';
-import Request from '../../../services/Request/Requests';
+import Request, { Difficulty } from '../../../services/Request/Requests';
 import GameResultStep from '../GameResultStep';
+import Authorization from '../../../services/Authorization';
+import Utils from '../../../services/Utils';
+import settings from '../../app/settings';
 
 const enum AudioChallengeSteps {
   FIRST_STEP,
@@ -19,10 +22,12 @@ const enum languageEnum {
    English = 'word',
 }
 
+export const enum GameScenario {
+  FROM_MAIN_MENU,
+  FROM_TEXTBOOK_PAGE,
+}
 class AudioChallengeWidget extends GameWidget {
   public container: HTMLElement;
-  public page: number;
-  public group: number;
   private language = 'English';
   private questions: Word[] = [];
   private answersPool: Word[] = [];
@@ -32,12 +37,23 @@ class AudioChallengeWidget extends GameWidget {
   private questionContainer: HTMLElement | null = null;
   private correctAnswersContainer: HTMLElement | null = null;
   private wrongAnswersContainer: HTMLElement | null = null;
+  private authorization: Authorization;
+  private gameScenario: GameScenario;
+  private group: number;
+  private page: number;
+  private questionsFinished = false;
 
-  constructor(container: HTMLElement, group:number, page: number) {
+  constructor(container: HTMLElement) {
     super();
     this.container = container;
-    this.group = group;
-    this.page = page;
+    const url = Utils.parseRequestURL();
+    this.gameScenario = url.id && url.verb ? GameScenario.FROM_TEXTBOOK_PAGE : GameScenario.FROM_MAIN_MENU;
+    this.group = url.id ? Number(url.id) : 0;
+    this.page = url.verb ? Number(url.verb) : 0;
+    this.authorization = Authorization.getInstance();
+    if (this.gameScenario === GameScenario.FROM_TEXTBOOK_PAGE && !this.authorization.isAuthorized()) {
+      throw new Error('User is not authorized');
+    }
   }
 
   public async showStep(stepNumber: number): Promise<void> {
@@ -55,8 +71,13 @@ class AudioChallengeWidget extends GameWidget {
 
   private async getFirstStep(): Promise<void> {
     return await Drawer.drawBlock(AudioChallengeFirstStep, this.container, {
-      onConfirm: async (language) => {
-          this.language = language;
+      gameScenario: this.gameScenario,
+      onConfirm: async (language, group) => {
+        if (this.gameScenario === GameScenario.FROM_MAIN_MENU) {
+          this.group = group === -1 ? Math.round(Math.random() * (settings.GROUPS_AMOUNT - 1)) : group;
+          this.page = Math.round(Math.random() * (settings.PAGES_AMOUNT - 1));
+        }
+        this.language = language;
         await Drawer.drawBlock(QuestionStepComponents, this.container, {
           timerContainer: Containers.TIMER_CONTAINER_ID,
           questionsContainer: Containers.QUESTIONS_CONTAINER_ID,
@@ -82,15 +103,28 @@ class AudioChallengeWidget extends GameWidget {
   }
 
   private async getQuestionStep() {
-    if (this.answersPool.length <= 0 || this.questions.length <=0) {
-      this.stopTimer();
-      return this.showStep(AudioChallengeSteps.RESULTS);   
+    if (this.questions.length <= 0) {
+      if (this.gameScenario === GameScenario.FROM_MAIN_MENU) {
+        this.stopTimer();
+        return await this.showStep(AudioChallengeSteps.RESULTS);
+      } else {
+        this.pauseTimer();
+        await this.getQuestions();
+        if (this.questionsFinished) {
+          this.stopTimer();
+          return await this.showStep(AudioChallengeSteps.RESULTS);
+        }
+        this.continueTimer();
+      }
     }
     const scenario = Math.floor(Math.random() * 5);
     const word = this.questions.pop();
+    if (this.answersPool.length < 4) {
+      await this.getAnswersPool();
+    }
     const answers = this.answersPool.splice(0, 4);
-    if(word) {
-      answers.splice(scenario, 0, word);  
+    if (word) {
+      answers.splice(scenario, 0, word);
     }
     if (!this.questionContainer) {
       throw Error('No question container found');
@@ -119,7 +153,7 @@ class AudioChallengeWidget extends GameWidget {
         } else {
           this.countCorrect += 1;
         }
-        this.updateResults(); 
+        this.updateResults();
       }
     });
   }
@@ -134,18 +168,73 @@ class AudioChallengeWidget extends GameWidget {
   }
 
   private async getQuestions(): Promise<void> {
-    this.questions = await Request.getWordsList({ page: this.page, group: this.group });
-    this.shuffle(this.questions); 
+    if (this.gameScenario === GameScenario.FROM_MAIN_MENU) {
+      const words = await Request.getWordsList({ group: this.group, page: this.page });
+      this.shuffle(words);
+      this.questions = words;
+    } else if (this.gameScenario === GameScenario.FROM_TEXTBOOK_PAGE) {
+      if (this.page < 0) {
+        this.questionsFinished = true;
+        return;
+      }
+      const userInfo = this.authorization.getUserInfo();
+      const filter = {
+        $and: [
+          {
+            $or: [
+              {'userWord.difficulty': Difficulty.NORMAL.toString()},
+              {'userWord.difficulty': Difficulty.HARD.toString()}
+            ]
+          },
+          {
+            'page': this.page
+          },
+          {
+            'group': this.group
+          }
+        ]
+      }
+      const aggregatedWords = await Request.getAggregatedWordsList({
+        id: userInfo.id,
+        token: userInfo.token,
+        group: this.group,
+        wordsPerPage: 20,
+        filter: JSON.stringify(filter),
+      });
+      let words = aggregatedWords[0].paginatedResults;
+      if (words.length === 0) {
+        const aggregatedWords = await Request.getAggregatedWordsList({
+          id: userInfo.id,
+          token: userInfo.token,
+          group: this.group,
+          filter: `{"page":"${this.page}"}`
+        })
+        words = aggregatedWords[0].paginatedResults;
+        if (words.length === 0) {
+          words = await Request.getWordsList({group: this.group, page: this.page});
+        } else {
+          this.page -= 1;
+          return await this.getQuestions();
+        }
+      }
+
+      this.page -= 1;
+      this.shuffle(words);
+      this.questions = words;
+    } else {
+      throw new Error('Unknown game scenario!');
+    }
   }
 
   private async getAnswersPool(): Promise<void> {
-    const i: number = (this.page - 4 >= 0) ? (this.page - 4) : (this.page + 1);
-    const arr: Promise<any>[] = [];
+    const page = Math.round(Math.random() * (settings.PAGES_AMOUNT - 1));
+    const i: number = (page - 4 >= 0) ? (page - 4) : (page + 1);
+    const arr: Promise<Word>[] = [];
     for (let j = 0; j < 4; j++) {
       arr.push(Request.getWordsList({page: i+j, group: this.group}))
     }
     this.answersPool = (await Promise.all(arr)).flat();
-    this.shuffle(this.answersPool);  
+    this.shuffle(this.answersPool);
   }
 
   private updateResults(): void {

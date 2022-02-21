@@ -5,8 +5,11 @@ import SprintFirstStep from './SprintFirstStep';
 import SprintQuestionStep from './SprintQuestionStep';
 import QuestionStepComponents from './QuestionStepComponent';
 import { Containers } from '../GameWidget';
-import Request from '../../../services/Request/Requests';
+import Request, { Difficulty } from '../../../services/Request/Requests';
 import GameResultStep from '../GameResultStep';
+import Utils from '../../../services/Utils';
+import settings from '../../app/settings';
+import Authorization from '../../../services/Authorization';
 
 const enum SprintSteps {
   FIRST_STEP,
@@ -14,7 +17,7 @@ const enum SprintSteps {
   RESULTS,
 }
 
-export const enum Scenario {
+export const enum QuestionScenario {
   WRONG_TRANSLATION,
   CORRECT_TRANSLATION,
 }
@@ -24,8 +27,13 @@ export const enum Results {
   CORRECT,
 }
 
+export const enum GameScenario {
+  FROM_MAIN_MENU,
+  FROM_TEXTBOOK_PAGE,
+}
 class SprintWidget extends GameWidget {
   public container: HTMLElement;
+  private authorization: Authorization;
   private questions: Word[] = [];
   private answersPool: Word[] = [];
   private questionsFinished = false;
@@ -35,10 +43,21 @@ class SprintWidget extends GameWidget {
   private questionContainer: HTMLElement | null = null;
   private correctAnswersContainer: HTMLElement | null = null;
   private wrongAnswersContainer: HTMLElement | null = null;
+  private gameScenario: GameScenario;
+  private group: number;
+  private page: number;
 
   constructor(container: HTMLElement) {
     super();
     this.container = container;
+    const url = Utils.parseRequestURL();
+    this.gameScenario = url.id && url.verb ? GameScenario.FROM_TEXTBOOK_PAGE : GameScenario.FROM_MAIN_MENU;
+    this.group = url.id ? Number(url.id) : 0;
+    this.page = url.verb ? Number(url.verb) : 0;
+    this.authorization = Authorization.getInstance();
+    if (this.gameScenario === GameScenario.FROM_TEXTBOOK_PAGE && !this.authorization.isAuthorized()) {
+      throw new Error('User is not authorized');
+    }
   }
 
   public async showStep(stepNumber: number): Promise<void> {
@@ -56,7 +75,12 @@ class SprintWidget extends GameWidget {
 
   private async getFirstStep(): Promise<void> {
     return await Drawer.drawBlock(SprintFirstStep, this.container, {
-      onConfirm: async () => {
+      gameScenario: this.gameScenario,
+      onConfirm: async (group: number) => {
+        if (this.gameScenario === GameScenario.FROM_MAIN_MENU) {
+          this.group = group === -1 ? Math.round(Math.random() * (settings.GROUPS_AMOUNT - 1)) : group;
+          this.page = Math.round(Math.random() * (settings.PAGES_AMOUNT - 1));
+        }
         await Drawer.drawBlock(QuestionStepComponents, this.container, {
           timerContainer: Containers.TIMER_CONTAINER_ID,
           questionsContainer: Containers.QUESTIONS_CONTAINER_ID,
@@ -75,7 +99,7 @@ class SprintWidget extends GameWidget {
         this.updateResults();
         await this.getAnswersPool();
         this.startTimer();
-        this.showStep(SprintSteps.GAME_QUESTION);
+        await this.showStep(SprintSteps.GAME_QUESTION);
       },
     });
   }
@@ -86,18 +110,18 @@ class SprintWidget extends GameWidget {
       await this.getQuestions();
       if (this.questionsFinished) {
         this.stopTimer();
-        this.showStep(SprintSteps.RESULTS);
+        return await this.showStep(SprintSteps.RESULTS);
       }
       this.continueTimer();
     }
-    const scenario: Scenario = Math.round(Math.random());
+    const scenario: QuestionScenario = Math.round(Math.random());
     const word = this.questions.pop();
-    const wrongAnswer =
-      this.answersPool[
-        Math.round(Math.random() * (this.answersPool.length - 1))
-      ];
+    if (!word) {
+      throw new Error('Word for question is undefined');
+    }
+    const wrongAnswer = await this.getWrongAnswer(word);
     const translation =
-      scenario === Scenario.CORRECT_TRANSLATION ? word : wrongAnswer;
+      scenario === QuestionScenario.CORRECT_TRANSLATION ? word : wrongAnswer;
     if (!this.questionContainer) {
       throw Error('No question container found');
     }
@@ -135,11 +159,85 @@ class SprintWidget extends GameWidget {
   }
 
   private async getQuestions(): Promise<void> {
-    this.questions = await Request.getWordsList({ page: 2 });
+    if (this.gameScenario === GameScenario.FROM_MAIN_MENU) {
+      if (this.page < 0) {
+        this.page = settings.PAGES_AMOUNT - 1;
+      }
+      const words = await Request.getWordsList({ group: this.group, page: this.page });
+      this.page -= 1;
+      this.shuffle(words);
+      this.questions = words;
+    } else if (this.gameScenario === GameScenario.FROM_TEXTBOOK_PAGE) {
+      if (this.page < 0) {
+        this.questionsFinished = true;
+        return;
+      }
+      const userInfo = this.authorization.getUserInfo();
+      const filter = {
+        $and: [
+          {
+            $or: [
+              {'userWord.difficulty': Difficulty.NORMAL.toString()},
+              {'userWord.difficulty': Difficulty.HARD.toString()}
+            ]
+          },
+          {
+            'page': this.page
+          },
+          {
+            'group': this.group
+          }
+        ]
+      }
+      const aggregatedWords = await Request.getAggregatedWordsList({
+        id: userInfo.id,
+        token: userInfo.token,
+        group: this.group,
+        wordsPerPage: 20,
+        filter: JSON.stringify(filter),
+      });
+      let words = aggregatedWords[0].paginatedResults;
+      if (words.length === 0) {
+        const aggregatedWords = await Request.getAggregatedWordsList({
+          id: userInfo.id,
+          token: userInfo.token,
+          group: this.group,
+          filter: `{"page":"${this.page}"}`
+        })
+        words = aggregatedWords[0].paginatedResults;
+        if (words.length === 0) {
+          words = await Request.getWordsList({group: this.group, page: this.page});
+        } else {
+          this.page -= 1;
+          return await this.getQuestions();
+        }
+      }
+
+      this.page -= 1;
+      this.shuffle(words);
+      this.questions = words;
+    } else {
+      throw new Error('Unknown game scenario!');
+    }
   }
 
   private async getAnswersPool(): Promise<void> {
-    this.answersPool = await Request.getWordsList({});
+    this.pauseTimer();
+    const randomPage = Math.round(Math.random() * (settings.PAGES_AMOUNT - 1));
+    this.answersPool = await Request.getWordsList({group: this.group, page: randomPage});
+    this.continueTimer();
+  }
+
+  private async getWrongAnswer(correct: Word): Promise<Word> {
+    if (this.answersPool.length <= 0) {
+      await this.getAnswersPool();
+    }
+    const randomPosition = Math.round(Math.random() * (this.answersPool.length - 1));
+    const wrong = this.answersPool.splice(randomPosition, 1)[0];
+    if (wrong === correct) {
+      return this.answersPool.splice(randomPosition, 1)[0];
+    }
+    return wrong;
   }
 
   private updateResults(): void {
