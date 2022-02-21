@@ -153,6 +153,7 @@ class SprintWidget extends GameWidget {
     return Drawer.drawBlock(GameResultStep, this.container, {
       correct: this.countCorrect,
       wrong: this.countWrong,
+      game: 'sprint',
       playerResult: this.playerResult,
     });
   }

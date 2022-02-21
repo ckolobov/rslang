@@ -162,6 +162,7 @@ class AudioChallengeWidget extends GameWidget {
     return Drawer.drawBlock(GameResultStep, this.container, {
       correct: this.countCorrect,
       wrong: this.countWrong,
+      game: 'audioChallenge',
       playerResult: this.playerResult,
     });
   }
