@@ -107,7 +107,6 @@ class GameResultStep implements Component {
             wordDiff = Number(Difficulty.LEARNED);
             correct_in_row = 0;
             this.learnCount += 1;
-            console.log('learn');
           }
         } else if (!this.options.playerResult[i][1]) {
           if (wordDiff === Number(Difficulty.LEARNED)) {
@@ -143,7 +142,6 @@ class GameResultStep implements Component {
 
         if (!Number(ans.optional.wasInGame)) {
           this.newCount += 1;
-          console.log('new');
         }
 
         await Request.editWordInUserWordsList(
@@ -207,7 +205,6 @@ class GameResultStep implements Component {
       );
       await this.updateGameStatistics();
       await Statistics.saveStatistics();
-      console.log('Statistics saved');
     }
   }
 }
