@@ -17,8 +17,31 @@ class Home implements Page {
       <a href="/#/textbook/${group}/${page}" class="button promo__button">Start</a>
     </div>
   </section>
+  <section class="app-description">
+    <h3 class="title">Application Description</h3>
+    <div class="app-description__content">
+      <p>RS Lang - приложение для изучения иностранных слов</p>
+      <p>Основные разделы сайта:</p>
+      <ul class="app-description__list">
+        <li>Textbook - учебник с базой слов для изучения. Слова в учебнике разбиты по разделам A1-C2.</li>
+        <li>Audio challenge - игра "Аудиовызов". Прослушай слово и найди его среди пяти предложенных вариантов.</li>
+        <li>Sprint - игра "Спринт". Игра покажет слово и перевод. Определи правильный ли это перевод.</li>
+        <li>Hangman - игра "Виселица". Класическая "Виселица" со словами на английском языке.</li>
+        <li>Pexeso - игра "Мемори". Найди пару: слово и его перевод.</li>
+        <li>Statistics - статистика. Статистика доступна только авторизированным пользователям.</li>
+      </ul>
+      <p>Дополнительные возможности для авторизированных пользователей:</p>
+      <ul class="app-description__list">
+        <li>Раздел User Words в учебнике. В этот раздел попадают сложные слова.</li>
+        <li>Возможность добавить слово в сложное (User Words) или изученное.</li>
+        <li>Возможность запускать игры со страницы учебника. Изученные слова не попадут в такую игру.</li>
+        <li>Прогресс изучения слова. Нажми на (i) на карточке в учебнике.</li>
+        <li>Раздел статистики с ежедневной и долгосрочной статистикой.</li>
+      </ul>
+    </div>
+  </section>
   <section class="team">
-    <h3 class="team__title">Our team</h3>
+    <h3 class="title">Our team</h3>
     <div class="team-members">
       <div class="team-member__card">
         <a class="member__link" href="https://github.com/ckolobov"
