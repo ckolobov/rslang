@@ -43,6 +43,8 @@ class Textbook implements Page {
           let total_wrong_sprint: number;
           let total_correct_audioChallenge: number;
           let total_wrong_audioChallenge: number;
+          let total_correct_pexesoOCM: number;
+          let total_wrong_pexesoOCM: number;
           try {
             const ans = await Request.getWordFromUserWordsList(currentId, currentToken, res[i].id);
             wordDiff = Number(ans.difficulty);
@@ -50,6 +52,8 @@ class Textbook implements Page {
             total_wrong_sprint = Number(ans.optional.wrongTotalSprint);
             total_correct_audioChallenge = Number(ans.optional.correctTotalAudioChallenge);
             total_wrong_audioChallenge = Number(ans.optional.wrongTotalAudioChallenge);
+            total_correct_pexesoOCM = Number(ans.optional.correctTotalPexesoOCM);
+            total_wrong_pexesoOCM = Number(ans.optional.wrongTotalPexesoOCM);
             total_diff += wordDiff;
           } catch {
             wordDiff = 1;
@@ -57,7 +61,9 @@ class Textbook implements Page {
             total_wrong_sprint = 0;
             total_correct_audioChallenge = 0;
             total_wrong_audioChallenge = 0;
-            await Request.SetWordInUsersList(currentId, currentToken, res[i].id, Difficulty.NORMAL, 0, 0, 0, 0, 0);
+            total_correct_pexesoOCM = 0;
+            total_wrong_pexesoOCM = 0;
+            await Request.SetWordInUsersList(currentId, currentToken, res[i].id, Difficulty.NORMAL, 0, 0, 0, 0, 0, 0, 0, false);
             total_diff += wordDiff;
           }
           res[i].diff = wordDiff;
@@ -65,6 +71,8 @@ class Textbook implements Page {
           res[i].wrongSprint = total_wrong_sprint;
           res[i].correctAudioChallenge = total_correct_audioChallenge;
           res[i].wrongAudioChallenge = total_wrong_audioChallenge;
+          res[i].correctPexesoOCM = total_correct_pexesoOCM;
+          res[i].wrongPexesoOCM = total_wrong_pexesoOCM;
         }
         result += await Drawer.drawComponent(WordCard, res[i]);
       }

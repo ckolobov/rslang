@@ -1,0 +1,85 @@
+@import '../abstract/constants';
+
+.stat-settings {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+
+.stat-setting-item {
+  display: flex;
+  flex-direction: column;
+  margin: 0 20px;
+  justify-content: center;
+  align-items: center;
+}
+
+.stat-setting-select {
+  width: 220px;
+  color: black;
+  background-color: #8fd4e2;
+  opacity: 0.9;
+  cursor: pointer;
+  text-align: center;
+}
+
+.stat-refresh {
+  margin: 10px auto !important;
+  width: fit-content;
+}
+
+.axis path, 
+.axis line {
+  fill: none;
+  stroke: #333;
+}
+
+.axis .grid-line {
+  stroke: pink;
+  stroke-opacity: 0.2;
+}
+
+.axis text {
+  font: 10px Arial;
+  stroke: white;
+}
+
+.dot {
+    stroke: steelblue;
+    fill: lightblue;
+}
+
+.dot1 {
+  stroke: red;
+  fill: rgb(250, 128, 128);
+}
+
+.dot2 {
+  stroke: green;
+  fill: greenyellow;
+}
+
+.dot3 {
+  stroke: blue;
+  fill: lightblue;
+}
+
+.dot4 {
+  stroke: yellow;
+  fill: rgb(248, 248, 133);
+}
+
+.dot5 {
+  stroke: rgb(41, 9, 9);
+  fill: rgb(180, 91, 91);
+}
+
+.dot6 {
+  stroke: white;
+  fill: grey;
+}
+
+.hide {
+  display: none;
+}

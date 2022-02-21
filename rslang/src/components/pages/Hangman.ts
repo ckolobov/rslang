@@ -3,6 +3,8 @@ import Request from '../../services/Request/Requests';
 import WordCard, { Card } from '../common/WordCard';
 import '../../scss/layout/_hangman.scss';
 import Drawer from '../drawer/Drawer';
+import Statistics from './Statistics';
+import Authorization from '../../services/Authorization';
 
 class Hangman implements Page {
 
@@ -129,7 +131,16 @@ class Hangman implements Page {
     return;
   }
 
-  public guessLetter(el:HTMLElement): void {
+  public async guessLetter(el:HTMLElement): Promise<void> {
+    const dateToday = new Date();
+    const date = `${dateToday.getDate().toString().padStart(2, '0')}-${dateToday.getMonth().toString().padStart(2, '0')}-${dateToday.getFullYear()}`;
+    let currentId = '';
+    let currentToken = '';
+    if (Authorization.getInstance().isAuthorized()) {
+      const userInfo = Authorization.getInstance().getUserInfo();
+      currentId = userInfo.id;
+      currentToken = userInfo.token;
+    }
     const letter = el.id;
     const hangman = (document.querySelector('.hangman') as HTMLElement); 
     this.currentLetters += letter; 
@@ -160,6 +171,12 @@ class Hangman implements Page {
       (hangman.querySelector('#svg_15') as HTMLElement).removeAttribute('display');
     }
     if (this.currentErrors === 6) {
+      const openLetters = (newWord.match(/[A-Z]/g)||[]).length;
+      await Statistics.updateStatistics();
+      Statistics.data[date].games.hangman.gamescount +=1;
+      Statistics.data[date].games.hangman.guess += openLetters;
+      Statistics.data[date].games.hangman.total += (openLetters + 6);
+      await Request.editStatistics(currentId, currentToken, Statistics.data, Statistics.learnedWords);
       (hangman.querySelector('#svg_16') as HTMLElement).removeAttribute('display');
       (document.getElementById('hangman-result') as HTMLParagraphElement).innerText = `You Lose! \nWord was ${this.currentWord}`;
       (document.getElementById('hangman-new') as HTMLElement).setAttribute('style', 'display: block');
@@ -167,6 +184,11 @@ class Hangman implements Page {
       (document.querySelector('.keyboard') as HTMLElement).setAttribute('style', 'display: none');
     }
     if (newWord===this.currentWord) {
+      await Statistics.updateStatistics();
+      Statistics.data[date].games.hangman.gamescount +=1;
+      Statistics.data[date].games.hangman.guess += this.currentWord.length;
+      Statistics.data[date].games.hangman.total += (this.currentWord.length + this.currentErrors);
+      await Request.editStatistics(currentId, currentToken, Statistics.data, Statistics.learnedWords);
       (document.getElementById('hangman-result') as HTMLParagraphElement).innerText = `You Win! \nResult: ${Math.round(100 * this.currentWord.length / (this.currentWord.length + this.currentErrors))}%`;
       (document.getElementById('hangman-new') as HTMLElement).setAttribute('style', 'display: block');
       (document.getElementById('discover-word') as HTMLElement).setAttribute('style', 'display: block');
