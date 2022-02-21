@@ -51,8 +51,10 @@ class AudioChallengeFirstStep implements Component {
     const startGameButton: HTMLElement = document.getElementById(START_GAME_BUTTON_ID) as HTMLElement;
     const select: HTMLSelectElement = document.querySelector('.select-language') as HTMLSelectElement;
     const levelSelect = document.getElementById(LEVEL_SELECT_ID) as HTMLSelectElement;
-    const level = levelSelect ? Number((levelSelect).value) : 0;
-    startGameButton.addEventListener('click', () => this.options.onConfirm(select.value, level));
+    startGameButton.addEventListener('click', () => {
+      const level = levelSelect ? Number((levelSelect).value) : 0;
+      this.options.onConfirm(select.value, level);
+    });
     return;
   }
 }

@@ -46,8 +46,10 @@ class SprintFirstStep implements Component {
   public async after_render(): Promise<void> {
     const startGameButton: HTMLElement = document.getElementById(START_GAME_BUTTON_ID) as HTMLElement;
     const levelSelect = document.getElementById(LEVEL_SELECT_ID) as HTMLSelectElement;
-    const level = levelSelect ? Number((levelSelect).value) : 0;
-    startGameButton.addEventListener('click', () => this.options.onConfirm(level));
+    startGameButton.addEventListener('click', () => {
+      const level = levelSelect ? Number((levelSelect).value) : 0;
+      this.options.onConfirm(level)
+    });
     return;
   }
 }

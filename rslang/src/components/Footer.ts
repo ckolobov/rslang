@@ -4,7 +4,7 @@ import '../scss/layout/_footer.scss';
 class Footer implements Component {
   public async render(): Promise<string> {
     const view = `
-    <div class="wrapper footer footer__wrapper}">
+    <div class="wrapper footer footer__wrapper">
       <a class="link rs-logo" href="https://rs.school/">
         <div class="rs-logo__img"></div>
       </a>
