@@ -207,7 +207,8 @@ class Request {
     wrongTotalAudioChallenge: number,
     correctTotalPexesoOCM: number,
     wrongTotalPexesoOCM: number,
-    wasInGame = false,
+    wasInGame: number,
+
   ) {
     const rawResponse = await fetch(`${url}/users/${id}/words/${wordid}`, {
       method: 'POST',
@@ -294,7 +295,7 @@ class Request {
     wrongTotalAudioChallenge: number,
     correctTotalPexesoOCM: number,
     wrongTotalPexesoOCM: number,
-    wasInGame = false,  
+    wasInGame: number,
   ) {
     const rawResponse = await fetch(`${url}/users/${id}/words/${wordid}`, {
       method: 'PUT',
@@ -429,7 +430,7 @@ class Request {
   }
 
   //15. Обновить данные в статистике.
-  static async editStatistics(id: string, token: string, optional: object, learnedWords = 0) {
+  static async editStatistics(id: string, token: string, optional: object, learnedWords: number) {
     const rawResponse = await fetch(`${url}/users/${id}/statistics`, {
       method: 'PUT',
       headers: {
