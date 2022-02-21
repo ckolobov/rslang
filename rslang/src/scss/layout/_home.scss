@@ -29,11 +29,21 @@
   @include vertical-flex();
 }
 
+.app-description__content {
+  padding-left: 20vw;
+  padding-right: 20vw;
+
+  .app-description__list li {
+    padding: 5px;
+    list-style: disc;
+  }
+}
+
 .team {
   padding: 100px $padding;
 }
 
-.team__title {
+.title {
   font-size: 3rem;
   text-transform: uppercase;
   font-weight: 500;
@@ -82,4 +92,5 @@
 .team-members {
   display: flex;
   justify-content: space-around;
+  flex-wrap: wrap;
 }
