@@ -234,7 +234,9 @@ class SprintWidget extends GameWidget {
     }
     const randomPosition = Math.round(Math.random() * (this.answersPool.length - 1));
     const wrong = this.answersPool.splice(randomPosition, 1)[0];
-    if (wrong === correct) {
+    const wrongId = wrong.id || wrong._id;
+    const correctId = correct.id || correct._id;
+    if (wrongId === correctId) {
       return this.answersPool.splice(randomPosition, 1)[0];
     }
     return wrong;

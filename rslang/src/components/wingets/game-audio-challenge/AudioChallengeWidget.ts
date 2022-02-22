@@ -119,18 +119,17 @@ class AudioChallengeWidget extends GameWidget {
     }
     const scenario = Math.floor(Math.random() * 5);
     const word = this.questions.pop();
-    if (this.answersPool.length < 4) {
-      await this.getAnswersPool();
-    }
-    const answers = this.answersPool.splice(0, 4);
-    if (word) {
-      answers.splice(scenario, 0, word);
-    }
-    if (!this.questionContainer) {
-      throw Error('No question container found');
-    }
     if (!word) {
       throw Error('No word for answer');
+    }
+    if (this.answersPool.length < 5) {
+      this.pauseTimer();
+      await this.getAnswersPool();
+      this.continueTimer();
+    }
+    const answers = this.getAnswers(word, scenario);
+    if (!this.questionContainer) {
+      throw Error('No question container found');
     }
     this.continueTimer();
     return await Drawer.drawBlock(AudioChallengeQuestionStep, this.questionContainer, {
@@ -156,6 +155,21 @@ class AudioChallengeWidget extends GameWidget {
         this.updateResults();
       }
     });
+  }
+
+  private getAnswers(word: Word, scenario: number) {
+    const wordId = word.id || word._id;
+    const answers = this.answersPool.splice(0, 4);
+    const wordInAnswers = answers.find((answer) => answer.id === wordId);
+    if (wordInAnswers) {
+      const newAnswer = this.answersPool.pop();
+      if (newAnswer) {
+        const index = answers.indexOf(wordInAnswers);
+        answers.splice(index, 1, newAnswer);
+      }
+    }
+    answers.splice(scenario, 0, word);
+    return answers;
   }
 
   private async getResultsStep(): Promise<void> {
