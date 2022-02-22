@@ -160,6 +160,7 @@ class SprintWidget extends GameWidget {
       if (this.page < 0) {
         if(this.gameScenario === GameScenario.FROM_TEXTBOOK_PAGE) {
           this.questionsFinished = true;
+          return;
         }
         this.page = settings.PAGES_AMOUNT - 1;
       }
