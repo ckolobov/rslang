@@ -101,7 +101,7 @@ class AudioChallengeWidget extends GameWidget {
 
   private async getQuestionStep() {
     if (this.questions.length <= 0) {
-      if (this.gameScenario === GameScenario.FROM_MAIN_MENU) {
+      if (this.gameScenario === GameScenario.FROM_MAIN_MENU || (this.gameScenario === GameScenario.FROM_TEXTBOOK_PAGE && !this.authorization.isAuthorized())) {
         this.stopTimer();
         return await this.showStep(AudioChallengeSteps.RESULTS);
       } else {
