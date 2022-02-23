@@ -5,6 +5,7 @@ export enum Containers {
   QUESTIONS_CONTAINER_ID = 'question',
   CORRECT_ANSWERS_CONTAINER_ID = 'correct-answers',
   WRONG_ANSWERS_CONTAINER_ID = 'wrong-answers',
+  IN_A_ROW_ANSWERS_CONTAINER_ID ='in-a-row'
 }
 
 abstract class GameWidget {
