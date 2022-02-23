@@ -55,9 +55,6 @@ class SprintWidget extends GameWidget {
     this.group = url.id ? Number(url.id) : 0;
     this.page = url.verb ? Number(url.verb) : 0;
     this.authorization = Authorization.getInstance();
-    if (this.gameScenario === GameScenario.FROM_TEXTBOOK_PAGE && !this.authorization.isAuthorized()) {
-      throw new Error('User is not authorized');
-    }
   }
 
   public async showStep(stepNumber: number): Promise<void> {
@@ -159,8 +156,12 @@ class SprintWidget extends GameWidget {
   }
 
   private async getQuestions(): Promise<void> {
-    if (this.gameScenario === GameScenario.FROM_MAIN_MENU) {
+    if (this.gameScenario === GameScenario.FROM_MAIN_MENU || (this.gameScenario === GameScenario.FROM_TEXTBOOK_PAGE && !this.authorization.isAuthorized())) {
       if (this.page < 0) {
+        if(this.gameScenario === GameScenario.FROM_TEXTBOOK_PAGE) {
+          this.questionsFinished = true;
+          return;
+        }
         this.page = settings.PAGES_AMOUNT - 1;
       }
       const words = await Request.getWordsList({ group: this.group, page: this.page });
