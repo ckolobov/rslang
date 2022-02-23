@@ -231,17 +231,23 @@ class Textbook implements Page {
     }
   }
 
-  public playAudio(this: Element): void {
-    const audio_word = this.children[0] as HTMLAudioElement;
-    const audio_meaning = this.children[1] as HTMLAudioElement;
-    const audio_example = this.children[2] as HTMLAudioElement;
+  public playAudio(el: HTMLElement): void {
+    const audio_word = el.children[0] as HTMLAudioElement;
+    const audio_meaning = el.children[1] as HTMLAudioElement;
+    const audio_example = el.children[2] as HTMLAudioElement;
+    const allAudioButtons = (document.querySelectorAll('.word-card__audio') as NodeListOf<HTMLElement>);
+    
     audio_word.play();
     audio_word.onended = () => {
+      allAudioButtons.forEach((el)=>el.setAttribute('style', 'pointer-events: none'));
       audio_meaning.play();
     };
     audio_meaning.onended = () => {
       audio_example.play();
     };
+    audio_example.onended = () => {
+      allAudioButtons.forEach((el)=>el.setAttribute('style', 'pointer-events: ""'));
+    }
   }
 
   public async after_render(): Promise<void> {
@@ -252,12 +258,14 @@ class Textbook implements Page {
         setTimeout(this.updatePageButtons, 2500);
       }
     });
-    document.querySelectorAll('.word-card__audio').forEach((el) => el.addEventListener('click', this.playAudio));
     setTimeout(()=>{
       if(Number(localStorage.getItem('rslang-current-page-total-difficulty')) === 0) {
         (document.querySelectorAll('.game__button') as NodeListOf<HTMLElement>).forEach((el)=>el.setAttribute('style', 'pointer-events:none'));
       }
-    }, 200);
+    }, 500);
+    setTimeout(()=>{
+      (document.querySelectorAll('.word-card__audio')as NodeListOf<HTMLElement>).forEach((el) => el.addEventListener('click', () => {this.playAudio(el)}))
+    },1000)
     return;
   }
 }

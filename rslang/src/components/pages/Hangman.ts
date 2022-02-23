@@ -12,7 +12,12 @@ class Hangman implements Page {
   private currentWordId = '12315456478751321';
   private currentLetters = '0';
   private currentErrors = 0;
+  private static authorization = Authorization.getInstance();
+
   public async render(): Promise<string> {
+    if (!Hangman.authorization.isAuthorized()) {
+      return '<h1>Hangman game is available only for authorized users</h1>';
+    }
     const view = `
       <div class="hangman__wrapper">
         <div class="hangman-settings">
