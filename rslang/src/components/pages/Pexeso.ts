@@ -14,8 +14,12 @@ class Pexeso implements Page {
   private learned = 0;
   private rowCorrect = 0;
   private startTime = new Date();
+  private static authorization = Authorization.getInstance();
   
   public async render(): Promise<string> {
+    if (!Pexeso.authorization.isAuthorized()) {
+      return '<h1>Pexeso game is available only for authorized users</h1>';
+    }
     let result = '';
     for (let i = 0; i < 40; i += 1) {
       result += await Drawer.drawComponent(PexesoCard, {id: '123', word: '.', type: 0});
