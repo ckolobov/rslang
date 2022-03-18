@@ -39,12 +39,10 @@ class SprintWidget extends GameWidget {
   private questionsFinished = false;
   private countWrong = 0;
   private countCorrect = 0;
-  private countInARow = 0;
   private playerResult: Array<[Word, boolean]> = [];
   private questionContainer: HTMLElement | null = null;
   private correctAnswersContainer: HTMLElement | null = null;
   private wrongAnswersContainer: HTMLElement | null = null;
-  private inARowAnswersContainer: HTMLElement | null = null;
   private gameScenario: GameScenario;
   private group: number;
   private page: number;
@@ -88,7 +86,6 @@ class SprintWidget extends GameWidget {
           questionsContainer: Containers.QUESTIONS_CONTAINER_ID,
           correctAnswersContainer: Containers.CORRECT_ANSWERS_CONTAINER_ID,
           wrongAnswersContainer: Containers.WRONG_ANSWERS_CONTAINER_ID,
-          inARowAnswersContainer: Containers.IN_A_ROW_ANSWERS_CONTAINER_ID
         });
         this.questionContainer = document.getElementById(
           Containers.QUESTIONS_CONTAINER_ID
@@ -98,9 +95,6 @@ class SprintWidget extends GameWidget {
         );
         this.wrongAnswersContainer = document.getElementById(
           Containers.WRONG_ANSWERS_CONTAINER_ID
-        );
-        this.inARowAnswersContainer = document.getElementById(
-          Containers.IN_A_ROW_ANSWERS_CONTAINER_ID
         );
         this.updateResults();
         await this.getAnswersPool();
@@ -142,10 +136,8 @@ class SprintWidget extends GameWidget {
         this.playerResult.push([word, Boolean(result)]);
         if (result === Results.WRONG) {
           this.countWrong += 1;
-          this.countInARow = 0;
         } else {
           this.countCorrect += 1;
-          this.countInARow += 1;
         }
         this.updateResults();
         if (this.timeFinished) {
@@ -249,12 +241,11 @@ class SprintWidget extends GameWidget {
   }
 
   private updateResults(): void {
-    if (!this.correctAnswersContainer || !this.wrongAnswersContainer || !this.inARowAnswersContainer) {
+    if (!this.correctAnswersContainer || !this.wrongAnswersContainer) {
       throw new Error('No result containers found');
     }
     this.correctAnswersContainer.innerHTML = this.countCorrect.toString();
     this.wrongAnswersContainer.innerHTML = this.countWrong.toString();
-    this.inARowAnswersContainer.innerHTML = this.countInARow.toString();
   }
 }
 

@@ -5,7 +5,6 @@ interface QuestionStepComponentsOptions {
   questionsContainer: string;
   correctAnswersContainer: string;
   wrongAnswersContainer: string;
-  inARowAnswersContainer: string;
 }
 
 class QuestionStepComponents implements Component {
@@ -22,7 +21,6 @@ class QuestionStepComponents implements Component {
         <p class="results-count__item"><span class="icon icon-correct"></span><span id=${this.options.correctAnswersContainer}></span></p>
         <p class="results-count__item"><span class="icon icon-wrong"></span><span id=${this.options.wrongAnswersContainer}></span></p>
       </div>
-      <div><p class="in-a-row-count">In a row: <span id=${this.options.inARowAnswersContainer}></span></p></div>
       <div class="${this.options.questionsContainer}" id=${this.options.questionsContainer}></div>
     `;
   }
