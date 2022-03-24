@@ -1,0 +1,39 @@
+@import '../abstract/constants';
+.button,
+.button_grey {
+  display: block;
+  text-align: center;
+  text-decoration: none;
+  font-weight: 800;
+  font-size: 0.8em;
+  text-transform: uppercase;
+  color: $color-light;
+  border-radius: $border-rounded;
+  margin: 10px;
+  padding: 1em 3em;
+  background-size: 200% auto;
+  box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08);
+  background-image: linear-gradient(
+    to right,
+    $color-primary 0%,
+    $color-additional 50%,
+    $color-primary 100%
+  );
+  transition: 0.5s;
+  cursor: pointer;
+  &:hover {
+    background-position: right center;
+  }
+  &:active {
+    transform: scale(0.9);
+  }
+}
+
+.button_grey {
+  background-image: linear-gradient(
+    to right,
+    $color-light 0%,
+    $color-charcoal 50%,
+    $color-light 100%
+  );
+}

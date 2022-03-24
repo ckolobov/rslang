@@ -1,0 +1,43 @@
+html {
+  font-size: 10px;
+}
+
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  font-family: $font-primary;
+  font-size: 2rem;
+  background-color: $color-dark;
+  color: $color-light;
+  overflow-x: hidden;
+}
+
+main {
+  flex-grow: 1;
+}
+
+a,
+button {
+  all: unset;
+  display: inline-block;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+section {
+  margin: auto;
+  padding: $padding;
+}
+
+.link {
+  transition: 0.3s;
+  &:hover {
+    filter: invert(25%);
+  }
+  &:active {
+    transform: scale(0.9);
+  }
+}
